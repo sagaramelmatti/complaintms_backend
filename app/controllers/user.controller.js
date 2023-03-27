@@ -10,6 +10,7 @@ exports.adminBoard = (req, res) => {
 
 const db = require("../models");
 const Op = db.Sequelize.Op;
+const User = db.users;
 
 // Create and Save a new User
 exports.create = (req, res) => {
