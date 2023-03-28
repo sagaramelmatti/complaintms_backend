@@ -50,4 +50,9 @@ db.complaints.belongsTo(db.user, {
   as: "user",
 });
 
+db.user.belongsTo(db.departments, {
+foreignKey: "departmentId",
+  as: "department",
+});
+
 module.exports = db;
