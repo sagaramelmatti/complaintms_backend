@@ -25,7 +25,7 @@ module.exports = function (app) {
     var router = require("express").Router();
     
   
-    // Retrieve a single Tutorial with id
+    // Retrieve a single Tutornpm starth id
     router.get("/:id",  users.findOne);
 
     router.post("/", users.create);

@@ -91,7 +91,14 @@ exports.updateComplaintStatus = (req, res) => {
 // Update a Complaint by the id in the request
 exports.updateUserStatus = (req, res) => {
   const id = req.params.id;
-  User.update(req.body.status, {
+  
+  // Create a Complaint
+  const user = {
+    status: req.body.status
+  };
+  
+  
+  User.update(user, {
     where: { id: id },
   })
     .then((num) => {
