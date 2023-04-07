@@ -107,6 +107,8 @@ exports.signin = (req, res) => {
         .then(user => {
             if (!user) {
                 return res.status(404).send({ message: "User Not found." });
+            } else if(user.status == 'D'){
+                return res.status(401).send({ message: "User Not Activated yet." });
             }
 
             var passwordIsValid = bcrypt.compareSync(
