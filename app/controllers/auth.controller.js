@@ -1,7 +1,9 @@
 const db = require("../models");
 const config = require("../config/auth.config");
+const nodemailer = require('nodemailer');
 const User = db.user;
 const Role = db.role;
+const UserRoles = db.userRoles;
 
 const Op = db.Sequelize.Op;
 
@@ -11,11 +13,66 @@ var bcrypt = require("bcryptjs");
 exports.signup = (req, res) => {
     // Save User to Database
     User.create({
-        username: req.body.username,
+        name: req.body.name,
         email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 8)
+        password: bcrypt.hashSync(req.body.password, 8),
+        departmentId: req.body.departmentId,
+        status: 'D',
+        userType: req.body.userType
     })
         .then(user => {
+            UserRoles.create({
+                roleId: '2',
+                userId: user.id
+            }).then(userRoles => {
+                res.send({ message: "User registered successfully!" });
+
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    auth: {
+                        user: 'voicejashn@gmail.com',
+                        pass: 'pjgfljhcnqzfvjbp',
+                    },
+                  });transporter.verify().then(console.log).catch(console.error);
+
+                var mailOptions = {
+                    from: 'sagarmelmatti@gmail.com',
+                    to: user.email,
+                    subject: 'Employee Registration',
+                    text: 'Employee registered succresfully', // plain text body
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(user.name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully </br> Admin will review ',
+                
+                  };
+                  
+                  transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      console.log('Email sent: ' + info.response);
+                    }
+                  }); 
+
+                var mailOptionsAdmin = {
+                    from: 'sagarmelmatti@gmail.com',
+                    to: 'sagarmelmatti@gmail.com',
+                    subject: 'Review New Employee',
+                    text: 'New Employee has been registered', // plain text body
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New employee has been registered kindly review ',
+                
+                  };
+                  
+                  transporter.sendMail(mailOptionsAdmin, function(error, info){
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      console.log('Email sent: ' + info.response);
+                    }
+                  }); 
+
+
+            });
+            /*
             if (req.body.roles) {
                 Role.findAll({
                     where: {
@@ -34,6 +91,7 @@ exports.signup = (req, res) => {
                     res.send({ message: "User registered successfully!" });
                 });
             }
+            */
         })
         .catch(err => {
             res.status(500).send({ message: err.message });
@@ -43,7 +101,7 @@ exports.signup = (req, res) => {
 exports.signin = (req, res) => {
     User.findOne({
         where: {
-            username: req.body.username
+            email: req.body.email
         }
     })
         .then(user => {
@@ -74,7 +132,7 @@ exports.signin = (req, res) => {
                 }
                 res.status(200).send({
                     id: user.id,
-                    username: user.username,
+                    name: user.name,
                     email: user.email,
                     roles: authorities,
                     accessToken: token
@@ -85,3 +143,9 @@ exports.signin = (req, res) => {
             res.status(500).send({ message: err.message });
         });
 };
+
+function capitalizeFirstLetter(str) {
+    // converting first letter to uppercase
+    const capitalized = str.replace(/^./, str[0].toUpperCase());
+    return capitalized;
+  }

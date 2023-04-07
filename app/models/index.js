@@ -21,6 +21,7 @@ db.sequelize = sequelize;
 
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
+db.userRoles = require("./userRoles.model.js")(sequelize, Sequelize);
 db.complaints = require("./complaint.model.js")(sequelize, Sequelize);
 db.departments = require("./department.model.js")(sequelize, Sequelize);
 

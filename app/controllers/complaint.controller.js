@@ -3,6 +3,7 @@ const Complaint = db.complaints;
 const Department = db.departments;
 const User = db.user;
 const Op = db.Sequelize.Op;
+const nodemailer = require('nodemailer');
 
 // Create and Save a new Complaint
 exports.create = (req, res) => {
@@ -195,4 +196,89 @@ exports.findByUserId = (req, res) => {
           err.message || "Some error occurred while retrieving payments.",
       });
     });
+};
+
+
+// Retrieve all Tutorials from the database (with condition).
+exports.sendEmail = async (req, res) => {
+
+  const opts = {
+    errorCorrectionLevel: 'H',
+    type: 'terminal',
+    quality: 0.95,
+    margin: 1,
+    width: 300,
+    height: 300,
+    color: {
+      dark: '#208698',
+      light: '#FFF',
+    },
+  }
+
+  let transporter = nodemailer.createTransport({
+    host: 'mailserver.vi.corp',
+    port: 25,
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  await Employee.getAllWithoutEmail((err, employees) => {
+    if (err)
+      res.send(err);
+
+      employees.forEach(async employee => {
+      if (typeof employee.employee_code !== 'undefined') {
+        let employee_name = employee.name.split(" ")[0]
+        let img = await QRCode.toDataURL(employee.employee_code, opts);
+        let mailOptions = {
+          //from: 'voicejashn@gmail.com',
+          from: 'VOICE JASHN 2023 <voiceannualday@vanderlande.com>',
+          to: employee.email,
+          subject: 'QR Code for Jashn 2023!',
+          text: 'Kindly Save QR Code for Annual Day Verification', // plain text body
+          html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(employee_name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> Thank you for your confirmation on attending Jashn 2023! </br>Here’s your unique QR code which is essential for seamless entry at the venue for you and your family members. </SPAN></br></br> <img src="' + img + '"> </br></br> <SPAN STYLE="font-size:12.0pt"> We look forward to have a great time with you all! </span></br></br> Regards, </br> VOICE JASHN 2023 Committee ', // html body
+          
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+            //res.send("Error in Sending Email");
+          } else {
+            console.log('Email sent: ' + info.response);
+            employee.email_sent_status = 1;
+            Employee.updateEmailSentStatus(
+              employee.employee_code,
+              new Employee(employee),
+              (err, data) => {
+                if (err) {
+                  if (err.kind === "not_found") {
+                    res.status(404).send({
+                      message: `Not found Employee with employee_code ${employee.employee_code}.`
+                    });
+                  } else {
+                    res.status(500).send({
+                      message: "Error updating Employee with employee_code " + employee.employee_code
+                    });
+                  }
+                }
+                //else res.send(data);
+              }
+            );
+            
+          }
+          
+        });
+
+        // res.send({
+        //   message: "Email sent Successfully",
+        // });
+      }
+    });
+
+    res.send({
+      message: "Email sent Successfully"
+    });
+  });
 };

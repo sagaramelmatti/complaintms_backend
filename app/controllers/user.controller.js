@@ -24,7 +24,6 @@ exports.create = (req, res) => {
 
   // Create a User
   const user = {
-    username: req.body.username,
     email: req.body.email,
     password: req.body.password,
     name: req.body.name,
@@ -35,7 +34,6 @@ exports.create = (req, res) => {
   User.create(user)
     .then((data) => {
       const user = {
-        username: req.body.username,
         email: req.body.email,
         password: req.body.password,
         name: req.body.name,
@@ -48,6 +46,42 @@ exports.create = (req, res) => {
         .then((num) => {
           if (num == 1) {
             console.log("User Paid & Remainng Amount updated successfully.");
+
+            var mailOptions = {
+              from: 'sagarmelmatti@gmail.com',
+              to: user.email,
+              subject: 'Employee Registration',
+              text: 'Employee registered succresfully', // plain text body
+              html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(employee_name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully </br> Admin will review ',
+          
+            };
+            
+            transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+              }
+            }); 
+
+            var mailOptionsAdmin = {
+              from: 'sagarmelmatti@gmail.com',
+              to: 'sagarmelmatti@gmail.com',
+              subject: 'Review New Employee',
+              text: 'New Employee has been registered', // plain text body
+              html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New employee has been registered kindly review ',
+          
+            };
+            
+            transporter.sendMail(mailOptionsAdmin, function(error, info){
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+              }
+            }); 
+
+
           } else {
             console.log(
               "Cannot update User with id=${req.body.studentId}. Maybe User was not found or req.body is empty!"
