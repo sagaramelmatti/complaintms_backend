@@ -1,5 +1,5 @@
 const { authJwt } = require("../middleware");
-const users = require("../controllers/user.controller.js");
+const user = require("../controllers/user.controller.js");
 
 module.exports = function (app) {
     app.use(function (req, res, next) {
@@ -9,32 +9,27 @@ module.exports = function (app) {
         );
         next();
     }); 
-    app.get("/api/test/all", users.allAccess); 
+
+    app.get("/api/test/all", user.allAccess); 
     
     app.get(
         "/api/test/user",
         [authJwt.verifyToken],
-        users.userBoard
+        user.userBoard
     ); 
     app.get(
         "/api/test/admin",
         [authJwt.verifyToken, authJwt.isAdmin],
-        users.adminBoard
+        user.adminBoard
     );
     
     var router = require("express").Router();
-    
-  
-    // Retrieve a single Tutornpm starth id
-    router.get("/:id",  users.findOne);
 
-    router.post("/", users.create);
-  
+     // Retrieve Selected User
+    router.get("/:id", user.findOne);
+    
     // Update a Tutorial with id
-    router.put("/:id",  users.update);
-  
-    // Delete a Tutorial with id
-    router.delete("/:id",  users.delete);
-  
+    router.put("/:id",  user.update);
+
     app.use('/api/users', router);
 };

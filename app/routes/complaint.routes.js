@@ -1,5 +1,5 @@
 const { authJwt } = require("../middleware");
-const complaints = require("../controllers/complaint.controller.js");
+const complaint = require("../controllers/complaint.controller.js");
 
 module.exports = app => {
     
@@ -13,23 +13,16 @@ module.exports = app => {
   
     var router = require("express").Router();
   
-    // Create a new Tutorial
-    // Retrieve all Tutorials
-    router.get("/", complaints.findAll);
-  
     // Retrieve a single Tutorial with id
-    router.get("/:id", complaints.findOne);
+    router.get("/:id", complaint.findOne);
 
-    router.post("/", complaints.create);
+    router.post("/", complaint.create);
   
     // Update a Tutorial with id
-    router.put("/:id", complaints.update);
+    router.put("/:id", complaint.update);
   
     // Delete a Tutorial with id
-    router.delete("/:id", complaints.delete);
+    router.delete("/:id", complaint.delete);
   
-    // Retrieve all Tutorials
-    router.get("/findByUserId/:userId", complaints.findByUserId);
-
     app.use('/api/complaints', router);
   };

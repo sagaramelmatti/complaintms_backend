@@ -8,10 +8,11 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.INTEGER
 		},
         title: {
+            allowNull: false,
             type: Sequelize.STRING(300)
         },
         description: {
-            type: Sequelize.STRING(10000)
+            type: Sequelize.STRING(500)
         },
         userId: {
             type: Sequelize.INTEGER
@@ -20,12 +21,11 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER
         },
         status: {
-            allowNull: false,
-            type: Sequelize.STRING(20)
+            type: Sequelize.STRING(10)
         },
         comment: {
             type: Sequelize.STRING(300)
-        },
+        }
     });
   
     return Complaint;

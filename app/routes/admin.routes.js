@@ -1,5 +1,7 @@
 const { authJwt } = require("../middleware");
 const admin = require("../controllers/admin.controller.js");
+const user = require("../controllers/user.controller.js");
+const complaint = require("../controllers/complaint.controller.js");
 
 module.exports = (app) => {
   app.use(function (req, res, next) {
@@ -12,17 +14,37 @@ module.exports = (app) => {
 
   var router = require("express").Router();
 
-  // Retrieve all Tutorials
-  router.get("/findAllComplaints/", admin.findAllComplaints);
+  /* User API */
 
-  // Retrieve all Tutorials
-  router.get("/findAllUsers/", admin.findAllUsers);
+  // Retrieve all User
+  router.get("/users/", admin.findAllUser);
 
-  // Delete User
-  router.delete("/deleteUser/", admin.deleteUser);
+  // Retrieve Selected User
+  router.get("/users/:id", admin.findUser);
 
-  // Delete User
-  router.delete("/deleteComplaint/", admin.deleteComplaint);
+  // Retrieve all User
+  router.put("/users/:id", admin.updateUser);
+
+  // Delete a User with id
+  router.delete("/users/:id",  admin.deleteUser);
+
+  
+  /* Complaint API */
+
+  // Retrieve all Complaint
+  router.get("/complaints/", admin.findAllComplaints);
+
+  // Retrieve selected Complaint
+  router.get("/complaints/:id", admin.findComplaint);
+
+  // Post Complaint
+  router.post("/complaints/", admin.createComplaint);
+
+  // Update Complaint
+  router.put("/complaints/:id", admin.updateComplaint);
+
+  // Delete a Complaint with id
+  router.delete("/complaints/:id",  complaint.delete);
 
   // Update a Complaint with id
   router.put("/complaint/updateStatus/:id", admin.updateComplaintStatus);

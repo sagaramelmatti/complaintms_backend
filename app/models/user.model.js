@@ -20,6 +20,9 @@ module.exports = (sequelize, Sequelize) => {
       },
       departmentId: {
         type: Sequelize.INTEGER
+      },
+      userType: {
+        type: Sequelize.STRING
       }
     });
   
