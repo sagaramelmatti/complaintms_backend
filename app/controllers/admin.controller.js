@@ -10,13 +10,8 @@ exports.findAllUser = (req, res) => {
   //var condition = studentId ? { studentId: { [Op.like]: `%${studentId}%` } } : null;
 
   //Complaint.findAll({ where: condition })
-  Complaint.findAll({
+  User.findAll({
     include: [
-      {
-        model: User,
-        as: "user",
-        attributes: ["name"],
-      },
       {
         model: Department,
         as: "department",
