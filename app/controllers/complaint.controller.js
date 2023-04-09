@@ -1,6 +1,7 @@
 const db = require("../models");
 const Complaint = db.complaints;
 const User = db.user;
+const Department = db.departments;
 const Op = db.Sequelize.Op;
 const nodemailer = require('nodemailer');
 const user = require("../controllers/user.controller.js");
@@ -267,4 +268,38 @@ exports.sendEmail = async (req, res) => {
       message: "Email sent Successfully"
     });
   });
+};
+
+
+
+// Retrieve all Payments from the database.
+exports.findComplaintByUserId = (req, res) => {
+  const userId = req.params.userId;
+
+  var condition = userId ? { userId: { [Op.like]: `%${userId}%` } } : null;
+
+  Complaint.findAll({
+    where: condition,
+    include: [
+      {
+        model: User,
+        as: "user",
+        attributes: ["name"],
+      },
+      {
+        model: Department,
+        as: "department",
+        attributes: ["name"],
+      },
+    ],
+  })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving payments.",
+      });
+    });
 };
