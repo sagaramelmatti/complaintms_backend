@@ -14,7 +14,7 @@ module.exports = app => {
     var router = require("express").Router();
 
     // Retrieve a single Tutorial with id
-    router.get("/findByUser/:id", complaint.findComplaintByUserId);
+    router.get("/findByUser/:userId", complaint.findComplaintByUserId);
   
     // Retrieve a single Tutorial with id
     router.get("/:id", complaint.findOne);

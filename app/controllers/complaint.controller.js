@@ -275,6 +275,8 @@ exports.sendEmail = async (req, res) => {
 // Retrieve all Payments from the database.
 exports.findComplaintByUserId = (req, res) => {
   const userId = req.params.userId;
+  
+  console.log("userid=",userId);
 
   var condition = userId ? { userId: { [Op.like]: `%${userId}%` } } : null;
 
