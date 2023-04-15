@@ -121,6 +121,10 @@ exports.findAllComplaints = (req, res) => {
         model: User,
         as: "user",
         attributes: ["name"],
+      },
+      {
+        model: User,
+        as: "user",
         attributes: ["email"],
       },
       {
