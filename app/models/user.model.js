@@ -21,6 +21,9 @@ module.exports = (sequelize, Sequelize) => {
       departmentId: {
         type: Sequelize.INTEGER
       },
+      locationId: {
+        type: Sequelize.INTEGER
+      },
       userType: {
         type: Sequelize.STRING
       }

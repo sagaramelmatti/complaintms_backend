@@ -20,6 +20,9 @@ module.exports = (sequelize, Sequelize) => {
         departmentId: {
             type: Sequelize.INTEGER
         },
+        locationId: {
+            type: Sequelize.INTEGER
+        },
         status: {
             type: Sequelize.STRING(10)
         },

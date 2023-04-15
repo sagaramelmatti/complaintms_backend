@@ -1,20 +1,27 @@
 const db = require("../models");
 const Complaint = db.complaints;
 const Department = db.departments;
+const Location = db.locations;
 const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Retrieve all Payments from the database.
 exports.findAllUser = (req, res) => {
-  //const rollNo = req.query.studentId;
-  //var condition = studentId ? { studentId: { [Op.like]: `%${studentId}%` } } : null;
+  
+  const locationId = req.query.locationId;
+  var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
 
-  //Complaint.findAll({ where: condition })
+  Complaint.findAll({ where: condition })
   User.findAll({
     include: [
       {
         model: Department,
         as: "department",
+        attributes: ["name"],
+      },
+      {
+        model: Location,
+        as: "location",
         attributes: ["name"],
       },
     ],
@@ -114,10 +121,16 @@ exports.findAllComplaints = (req, res) => {
         model: User,
         as: "user",
         attributes: ["name"],
+        attributes: ["email"],
       },
       {
         model: Department,
         as: "department",
+        attributes: ["name"],
+      },
+      {
+        model: Location,
+        as: "location",
         attributes: ["name"],
       },
     ],

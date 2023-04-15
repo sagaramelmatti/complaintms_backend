@@ -35,11 +35,10 @@ exports.create = (req, res) => {
           .then((data) => {
             if (data) {
 
-              console.log("data",data);
+              //console.log("data",data);
 
               //res.send(data);
 
-              /*
               const transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 587,
@@ -82,11 +81,6 @@ exports.create = (req, res) => {
                       console.log('Email sent: ' + info.response);
                     }
                   });
-
-        */
-
-
-
 
             } else {
               res.status(404).send({
@@ -276,8 +270,6 @@ exports.sendEmail = async (req, res) => {
 exports.findComplaintByUserId = (req, res) => {
   const userId = req.params.userId;
   
-  console.log("userid=",userId);
-
   var condition = userId ? { userId: { [Op.like]: `%${userId}%` } } : null;
 
   Complaint.findAll({

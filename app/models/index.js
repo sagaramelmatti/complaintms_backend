@@ -52,9 +52,19 @@ db.complaints.belongsTo(db.user, {
   as: "user",
 });
 
+db.complaints.belongsTo(db.locations, {
+  foreignKey: "locationId",
+  as: "location",
+});
+
 db.user.belongsTo(db.departments, {
 foreignKey: "departmentId",
   as: "department",
 });
+
+db.user.belongsTo(db.locations, {
+  foreignKey: "locationId",
+    as: "location",
+  });
 
 module.exports = db;
