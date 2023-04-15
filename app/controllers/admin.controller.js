@@ -11,8 +11,8 @@ exports.findAllUser = (req, res) => {
   const locationId = req.query.locationId;
   var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
 
-  Complaint.findAll({ where: condition })
   User.findAll({
+    where: condition,
     include: [
       {
         model: Department,
@@ -114,8 +114,12 @@ exports.findAllComplaints = (req, res) => {
   //const rollNo = req.query.studentId;
   //var condition = studentId ? { studentId: { [Op.like]: `%${studentId}%` } } : null;
 
-  //Complaint.findAll({ where: condition })
+
+  const locationId = req.query.locationId;
+  var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
+
   Complaint.findAll({
+    where: condition,
     include: [
       {
         model: User,
