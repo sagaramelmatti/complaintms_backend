@@ -28,16 +28,16 @@ exports.signup = (req, res) => {
                 res.send({ message: "User registered successfully!" });
 
                 const transporter = nodemailer.createTransport({
-                    host: 'smtp.gmail.com',
+                    host: 'us2.smtp.mailhostbox.com',
                     port: 587,
                     auth: {
-                        user: 'voicejashn@gmail.com',
-                        pass: 'pjgfljhcnqzfvjbp',
+                        user: 'admin@sharemydish.com',
+                        pass: '*xio!h#3',
                     },
                   });transporter.verify().then(console.log).catch(console.error);
 
                 var mailOptions = {
-                    from: 'sagarmelmatti@gmail.com',
+                    from: 'admin@sharemydish.com',
                     to: user.email,
                     subject: 'Employee Registration',
                     text: 'Employee registered succresfully', // plain text body
@@ -54,11 +54,15 @@ exports.signup = (req, res) => {
                   }); 
 
                 var mailOptionsAdmin = {
-                    from: 'sagarmelmatti@gmail.com',
+                    from: 'admin@sharemydish.com',
                     to: 'sagarmelmatti@gmail.com',
                     subject: 'Review New Employee',
                     text: 'New Employee has been registered', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New employee has been registered kindly review ',
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New employee has been registered kindly review ,' +
+                    'Details mentioned below: '+
+                    '<p>    <br> Name: ' + capitalizeFirstLetter(user.name) + 
+                    '       <br> Email : ' + capitalizeFirstLetter(user.email) +
+                    '       <br> Location : ' + capitalizeFirstLetter(user.email)+'',
                 
                   };
                   
@@ -150,4 +154,4 @@ function capitalizeFirstLetter(str) {
     // converting first letter to uppercase
     const capitalized = str.replace(/^./, str[0].toUpperCase());
     return capitalized;
-  }
+}

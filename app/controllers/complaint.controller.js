@@ -1,5 +1,6 @@
 const db = require("../models");
 const Complaint = db.complaints;
+const Location = db.locations;
 const User = db.user;
 const Department = db.departments;
 const Op = db.Sequelize.Op;
@@ -7,105 +8,124 @@ const nodemailer = require('nodemailer');
 const user = require("../controllers/user.controller.js");
 
 // Create and Save a new Complaint
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   // Validating the request
-    if (!req.body.title) {
-      res.status(400).send({
-        message: "Title can be placed here!"
-      });
-      return;
-    }
-
-    // Creating a Tutorial
-    const complaint = {
-      title: req.body.title,
-      description: req.body.description,
-      userId: req.body.userId,
-      departmentId: req.body.departmentId,
-      status: req.body.status
-    };
-
-  // Saving the Tutorial in the database
-    Complaint.create(complaint).then(data => {
-
-      User.findOne = (req, res) => {
-        const id = complaint.userId;
-      
-        User.findByPk(id)
-          .then((data) => {
-            if (data) {
-
-              //console.log("data",data);
-
-              //res.send(data);
-
-              const transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 587,
-                auth: {
-                    user: 'voicejashn@gmail.com',
-                    pass: 'pjgfljhcnqzfvjbp',
-                },
-              });transporter.verify().then(console.log).catch(console.error);
-        
-              var mailOptions = {
-                  from: 'sagarmelmatti@gmail.com',
-                  to: req.body.email,
-                  subject: 'New Complaint Added',
-                  text: 'New Complaint Added', // plain text body
-                  html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(req.body.name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully </br> Admin will review ',
-              
-                };
-
-                 transporter.sendMail(mailOptions, function(error, info){
-                    if (error) {
-                      console.log(error);
-                    } else {
-                      console.log('Email sent: ' + info.response);
-                    }
-                  }); 
-
-                var mailOptionsAdmin = {
-                    from: 'sagarmelmatti@gmail.com',
-                    to: 'sagarmelmatti@gmail.com',
-                    subject: 'Review New Employee',
-                    text: 'New Employee has been registered', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New employee has been registered kindly review ',
-                
-                  };
-                  
-                  transporter.sendMail(mailOptionsAdmin, function(error, info){
-                    if (error) {
-                      console.log(error);
-                    } else {
-                      console.log('Email sent: ' + info.response);
-                    }
-                  });
-
-            } else {
-              res.status(404).send({
-                message: `Cannot find User with id=${id}.`,
-              });
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message: "Error retrieving User with id=" + id,
-            });
-          });
-      };
-
-      
-        
-       
-
-      res.send("Complaint Added successfully.");
-    }).catch(err => {
-      res.status(500).send({
-        Message:
-          err.message || "Some errors will occur when creating a tutorial"
-      });
+  if (!req.body.title) {
+    res.status(400).send({
+      message: "Title can be placed here!"
     });
+    return;
+  }
+
+  // Creating a Tutorial
+  let complaint = {
+    title: req.body.title,
+    description: req.body.description,
+    userId: req.body.userId,
+    departmentId: req.body.departmentId,
+    locationId: req.body.locationId,
+    status: req.body.status
+  };
+
+  try {
+    const complaint_result = await Complaint.create(complaint);
+
+    const location_result = await Location.findByPk(complaint.locationId);
+
+    console.log('success');
+    console.log('location emial'+location_result.email);
+
+    const id = complaint.userId;
+    User.findByPk(id)
+      .then((user_data) => {
+        if (user_data) {
+          const transporter = nodemailer.createTransport({
+            host: 'us2.smtp.mailhostbox.com',
+            port: 25,
+            auth: {
+              user: 'admin@sharemydish.com',
+              pass: '*xio!h#3',
+            },
+          }); transporter.verify().then(console.log).catch(console.error);
+
+          var mailOptions = {
+            from: 'admin@sharemydish.com',
+            to: user_data.email,
+            subject: 'New Complaint Added',
+            text: 'New Complaint Added', // plain text body
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> your Complaint has been submitted, </br> Admin will review ',
+
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
+          var mailOptionsAdmin = {
+            from: 'admin@sharemydish.com',
+            to: 'sagarmelmatti@gmail.com',
+            subject: 'Review New Complaint',
+            text: 'New Complaint has been registered', // plain text body
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New complaint has been posted, </br> Kindly review / forward it to concern person'+
+            
+            '<p> Complaint details mentioned below : <p>'+
+            ' User Name: ' + user_data.name + 
+            ' <br> Email : ' + user_data.email +
+            ' <br> Location : ' + location_result.name +
+            ' <br> Complaint In Short : ' + complaint_result.title +
+            ' <br> Complaint Description: ' + complaint_result.description +'',
+
+          };
+
+          transporter.sendMail(mailOptionsAdmin, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
+          var mailOptionsLocationHead = {
+            from: 'admin@sharemydish.com',
+            to: location_result.email,
+            subject: 'New Complaint Registered For your location',
+            text: 'New Complaint Added', // plain text body
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(location_result.headName) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> New Complaint has been registred for your location, </br> Kindly review '+
+            '<p> Details mentioned below: <p>'+
+            ' User Name: ' + user_data.name + 
+            ' <br> Email : ' + user_data.email +
+            ' <br> Location : ' + location_result.name +
+            ' <br> Complaint In Short : ' + complaint_result.title +
+            ' <br> Complaint Description: ' + complaint_result.description +'',
+          };
+
+          transporter.sendMail(mailOptionsLocationHead, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+
+          res.send("Complaint Added successfully.");
+        } else {
+          res.status(404).send({
+            message: `Cannot find User with id=${id}.`,
+          });
+        }
+      })
+
+    return complaint_result;
+  } catch (error) {
+    console.log('error');
+    return 'test';
+  }
+
+
 };
 
 // Update a Complaint by the id in the request
@@ -269,7 +289,7 @@ exports.sendEmail = async (req, res) => {
 // Retrieve all Payments from the database.
 exports.findComplaintByUserId = (req, res) => {
   const userId = req.params.userId;
-  
+
   var condition = userId ? { userId: { [Op.like]: `%${userId}%` } } : null;
 
   Complaint.findAll({
@@ -297,3 +317,9 @@ exports.findComplaintByUserId = (req, res) => {
       });
     });
 };
+
+function capitalizeFirstLetter(str) {
+  // converting first letter to uppercase
+  const capitalized = str.replace(/^./, str[0].toUpperCase());
+  return capitalized;
+}
