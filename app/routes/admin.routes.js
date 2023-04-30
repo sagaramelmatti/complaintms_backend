@@ -52,5 +52,8 @@ module.exports = (app) => {
   // Update a Complaint with id
   router.put("/user/updateStatus/:id", admin.updateUserStatus);
 
+   // Retrieve all Complaint
+   router.get("/reports/complaints/", admin.getComplaintReport);
+
   app.use("/api/admin", router);
 };

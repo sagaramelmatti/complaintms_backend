@@ -4,12 +4,36 @@ const Department = db.departments;
 const Location = db.locations;
 const User = db.user;
 const Op = db.Sequelize.Op;
+//const pdf = require('html-pdf');
+const pdfTemplate = require('../documents');
+const sequelize = require("sequelize");
 
 // Retrieve all Payments from the database.
 exports.findAllUser = (req, res) => {
   
   const locationId = req.query.locationId;
-  var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
+  const userId = req.query.userId;
+  /*
+  console.log("location id"+locationId);
+
+  const condition = [
+    {
+      //locationId: locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null,
+      locationId: locationId != undefined ?  {   [Op.like]: `%${locationId}%` }  : null
+    }
+];
+*/
+
+  let condition = {};
+  if (locationId) {
+    condition = { locationId: locationId ?  { [Op.like]: `%${locationId}%` }  : null };
+  }
+  if (userId) {
+    condition = { userId: userId ?  { [Op.like]: `%${userId}%` }  : null };
+  }
+
+
+  //var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
 
   User.findAll({
     where: condition,
@@ -111,15 +135,31 @@ exports.updateUser = (req, res) => {
 
 // Retrieve all Payments from the database.
 exports.findAllComplaints = (req, res) => {
-  //const rollNo = req.query.studentId;
-  //var condition = studentId ? { studentId: { [Op.like]: `%${studentId}%` } } : null;
-
 
   const locationId = req.query.locationId;
-  var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
+  const userId = req.query.userId;
+  //var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
+
+  let condition = {};
+  if (locationId) {
+    condition = { locationId: locationId ?  { [Op.like]: `%${locationId}%` }  : null };
+  }
+  if (userId) {
+    condition = { userId: userId ?  { [Op.like]: `%${userId}%` }  : null };
+  }
 
   Complaint.findAll({
     where: condition,
+    attributes: [
+      "id",
+      "title",
+       "description",
+      "status",
+      "comment",
+      [sequelize.fn('date_format', sequelize.col('complaint_added_date'), '%Y-%m-%d %H:%i'), 'complaint_added_date'],
+      [sequelize.fn('date_format', sequelize.col('complaint_resolved_date'), '%Y-%m-%d %H:%i'), 'complaint_resolved_date'],
+    ],
+
     include: [
       {
         model: User,
@@ -142,6 +182,12 @@ exports.findAllComplaints = (req, res) => {
         attributes: ["name"],
       },
     ],
+    /*
+    attributes: [
+      
+      
+    ]
+    */
   })
     .then((data) => {
       res.send(data);
@@ -195,6 +241,11 @@ exports.findComplaintByUserId = (req, res) => {
         as: "department",
         attributes: ["name"],
       },
+      {
+        model: Location,
+        as: "location",
+        attributes: ["name"],
+      },
     ],
   })
     .then((data) => {
@@ -215,6 +266,7 @@ exports.updateComplaintStatus = (req, res) => {
   const complaint = {
     status: req.body.status,
     comment: req.body.comment,
+    complaint_resolved_date: new Date()
   };
 
   Complaint.update(complaint, {
@@ -236,6 +288,7 @@ exports.updateComplaintStatus = (req, res) => {
         message: "Error updating Complaint with id=" + id,
       });
     });
+    
 };
 
 // Update a Complaint by the id in the request
@@ -314,7 +367,8 @@ exports.createComplaint = (req, res) => {
       description: req.body.description,
       userId: req.body.userId,
       departmentId: req.body.departmentId,
-      status: req.body.status
+      status: req.body.status,
+      complaint_added_date: new Date()
     };
 
   // Saving the Tutorial in the database
@@ -352,4 +406,23 @@ exports.updateComplaint = (req, res) => {
         message: "Error updating Complaint with id=" + id,
       });
     });
+};
+
+
+// Retrieve all Payments from the database.
+exports.getComplaintReport = (req, res) => {
+  
+  const locationId = req.query.locationId;
+  var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
+
+  app.post('/create-pdf', (req, res) => {
+    pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
+        if(err) {
+            res.send(Promise.reject());
+        }
+
+        res.send(Promise.resolve());
+    });
+});
+
 };

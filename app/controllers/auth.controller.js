@@ -1,24 +1,33 @@
 const db = require("../models");
 const config = require("../config/auth.config");
+const email_config = require("../config/email.json");
 const nodemailer = require('nodemailer');
 const User = db.user;
 const Role = db.role;
 const UserRoles = db.userRoles;
-
+const Location = db.locations;
 const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+var sender_email = email_config.sender_email;
+var sender_password = email_config.sender_password;
+var admin_email = email_config.admin_email;
 
-exports.signup = (req, res) => {
+exports.signup = async (req, res) => {
     // Save User to Database
+
+    const location_result = await Location.findByPk(req.body.locationId);
+    const department_result = await Location.findByPk(req.body.departmentId);
+
     User.create({
         name: req.body.name,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 8),
         departmentId: req.body.departmentId,
+        locationId: req.body.locationId,
         status: 'D',
-        userType: req.body.userType
+        userType: 'U'
     })
         .then(user => {
             UserRoles.create({
@@ -31,17 +40,17 @@ exports.signup = (req, res) => {
                     host: 'us2.smtp.mailhostbox.com',
                     port: 587,
                     auth: {
-                        user: 'admin@sharemydish.com',
-                        pass: '*xio!h#3',
+                        user: sender_email,
+                        pass: sender_password,
                     },
                   });transporter.verify().then(console.log).catch(console.error);
 
                 var mailOptions = {
-                    from: 'admin@sharemydish.com',
+                    from: sender_email,
                     to: user.email,
                     subject: 'Employee Registration',
                     text: 'Employee registered succresfully', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(user.name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully </br> Admin will review ',
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(user.name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully,  Admin will review ',
                 
                   };
                   
@@ -54,15 +63,16 @@ exports.signup = (req, res) => {
                   }); 
 
                 var mailOptionsAdmin = {
-                    from: 'admin@sharemydish.com',
-                    to: 'sagarmelmatti@gmail.com',
+                    from: sender_email,
+                    to: admin_email,
                     subject: 'Review New Employee',
                     text: 'New Employee has been registered', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New employee has been registered kindly review ,' +
-                    'Details mentioned below: '+
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin You have registered new Employee , kindly check  : ,' +
+                    '<br> Details mentioned below: '+
                     '<p>    <br> Name: ' + capitalizeFirstLetter(user.name) + 
-                    '       <br> Email : ' + capitalizeFirstLetter(user.email) +
-                    '       <br> Location : ' + capitalizeFirstLetter(user.email)+'',
+                    '       <br> Email : ' + user.email +
+                    '       <br> Location : ' + location_result.name +
+                    '       <br> Department : ' + department_result.name+'',
                 
                   };
                   

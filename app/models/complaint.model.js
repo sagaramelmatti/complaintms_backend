@@ -28,7 +28,14 @@ module.exports = (sequelize, Sequelize) => {
         },
         comment: {
             type: Sequelize.STRING(300)
+        },
+        complaint_added_date: {
+            type: 'TIMESTAMP'
+        },
+        complaint_resolved_date: {
+            type: 'TIMESTAMP'
         }
+
     });
   
     return Complaint;
