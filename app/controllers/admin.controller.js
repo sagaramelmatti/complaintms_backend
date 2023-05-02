@@ -4,13 +4,13 @@ const Department = db.departments;
 const Location = db.locations;
 const User = db.user;
 const Op = db.Sequelize.Op;
-//const pdf = require('html-pdf');
+const pdf = require('html-pdf');
 const pdfTemplate = require('../documents');
 const sequelize = require("sequelize");
 
 // Retrieve all Payments from the database.
 exports.findAllUser = (req, res) => {
-  
+
   const locationId = req.query.locationId;
   const userId = req.query.userId;
   /*
@@ -26,10 +26,10 @@ exports.findAllUser = (req, res) => {
 
   let condition = {};
   if (locationId) {
-    condition = { locationId: locationId ?  { [Op.like]: `%${locationId}%` }  : null };
+    condition = { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null };
   }
   if (userId) {
-    condition = { userId: userId ?  { [Op.like]: `%${userId}%` }  : null };
+    condition = { userId: userId ? { [Op.like]: `%${userId}%` } : null };
   }
 
 
@@ -142,10 +142,10 @@ exports.findAllComplaints = (req, res) => {
 
   let condition = {};
   if (locationId) {
-    condition = { locationId: locationId ?  { [Op.like]: `%${locationId}%` }  : null };
+    condition = { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null };
   }
   if (userId) {
-    condition = { userId: userId ?  { [Op.like]: `%${userId}%` }  : null };
+    condition = { userId: userId ? { [Op.like]: `%${userId}%` } : null };
   }
 
   Complaint.findAll({
@@ -153,7 +153,7 @@ exports.findAllComplaints = (req, res) => {
     attributes: [
       "id",
       "title",
-       "description",
+      "description",
       "status",
       "comment",
       [sequelize.fn('date_format', sequelize.col('complaint_added_date'), '%Y-%m-%d %H:%i'), 'complaint_added_date'],
@@ -288,19 +288,19 @@ exports.updateComplaintStatus = (req, res) => {
         message: "Error updating Complaint with id=" + id,
       });
     });
-    
+
 };
 
 // Update a Complaint by the id in the request
 exports.updateUserStatus = (req, res) => {
   const id = req.params.id;
-  
+
   // Create a Complaint
   const user = {
     status: req.body.status
   };
-  
-  
+
+
   User.update(user, {
     where: { id: id },
   })
@@ -354,32 +354,32 @@ exports.deleteComplaint = (req, res) => {
 // Create and Save a new Complaint
 exports.createComplaint = (req, res) => {
   // Validating the request
-    if (!req.body.title) {
-      res.status(400).send({
-        message: "Title can be placed here!"
-      });
-      return;
-    }
+  if (!req.body.title) {
+    res.status(400).send({
+      message: "Title can be placed here!"
+    });
+    return;
+  }
 
-    // Creating a Tutorial
-    const complaint = {
-      title: req.body.title,
-      description: req.body.description,
-      userId: req.body.userId,
-      departmentId: req.body.departmentId,
-      status: req.body.status,
-      complaint_added_date: new Date()
-    };
+  // Creating a Tutorial
+  const complaint = {
+    title: req.body.title,
+    description: req.body.description,
+    userId: req.body.userId,
+    departmentId: req.body.departmentId,
+    status: req.body.status,
+    complaint_added_date: new Date()
+  };
 
   // Saving the Tutorial in the database
-    Complaint.create(complaint).then(data => {
-      res.send("Complaint Added successfully.");
-    }).catch(err => {
-      res.status(500).send({
-        Message:
-          err.message || "Some errors will occur when creating a tutorial"
-      });
+  Complaint.create(complaint).then(data => {
+    res.send("Complaint Added successfully.");
+  }).catch(err => {
+    res.status(500).send({
+      Message:
+        err.message || "Some errors will occur when creating a tutorial"
     });
+  });
 };
 
 
@@ -408,21 +408,79 @@ exports.updateComplaint = (req, res) => {
     });
 };
 
-
 // Retrieve all Payments from the database.
-exports.getComplaintReport = (req, res) => {
-  
+exports.createComplaintReport = async (req, res) => {
+
   const locationId = req.query.locationId;
-  var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
+  const userId = req.query.userId;
+  //var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
 
-  app.post('/create-pdf', (req, res) => {
-    pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
-        if(err) {
-            res.send(Promise.reject());
-        }
+  let condition = {};
+  /*
+  if (locationId) {
+    condition = { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null };
+  }
+  if (userId) {
+    condition = { userId: userId ? { [Op.like]: `%${userId}%` } : null };
+  }
+  */
 
-        res.send(Promise.resolve());
+  const complaint_list = await Complaint.findAll({
+    where: condition,
+    attributes: [
+      "id",
+      "title",
+      "description",
+      "status",
+      "comment",
+      [sequelize.fn('date_format', sequelize.col('complaint_added_date'), '%Y-%m-%d %H:%i'), 'complaint_added_date'],
+      [sequelize.fn('date_format', sequelize.col('complaint_resolved_date'), '%Y-%m-%d %H:%i'), 'complaint_resolved_date'],
+    ],
+
+    include: [
+      {
+        model: User,
+        as: "user",
+        attributes: ["name"],
+      },
+      {
+        model: User,
+        as: "user",
+        attributes: ["email"],
+      },
+      {
+        model: Department,
+        as: "department",
+        attributes: ["name"],
+      },
+      {
+        model: Location,
+        as: "location",
+        attributes: ["name"],
+      },
+    ],
+  });
+
+  if(complaint_list){
+    //console.log("complaint_added_date="+complaint_list[0].complaint_added_date);
+    pdf.create(pdfTemplate(complaint_list), {}).toFile(`${__dirname}/result.pdf`, (err) => {
+      if(err) {
+        res.send(Promise.reject());
+    }
+
+    res.send(Promise.resolve());
+  });
+  } else {
+    res.status(404).send({
+      message: `Cannot find Complaint with id=${id}.`,
     });
-});
+  }
 
+};
+
+
+
+// Retrieve all Students from the database.
+exports.fetchComplaintReport = (req, res) => {
+  res.sendFile(`${__dirname}/result.pdf`)
 };

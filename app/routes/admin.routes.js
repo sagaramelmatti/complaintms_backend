@@ -53,7 +53,10 @@ module.exports = (app) => {
   router.put("/user/updateStatus/:id", admin.updateUserStatus);
 
    // Retrieve all Complaint
-   router.get("/reports/complaints/", admin.getComplaintReport);
+   router.post("/reports/complaints/", admin.createComplaintReport);
+
+   // Retrieve all Complaint
+   router.get("/reports/complaints/", admin.fetchComplaintReport);
 
   app.use("/api/admin", router);
 };
