@@ -477,18 +477,20 @@ exports.updateComplaint = (req, res) => {
 exports.createComplaintReport = async (req, res) => {
 
   const locationId = req.query.locationId;
-  const userId = req.query.userId;
-  //var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
+  const fromDate = req.query.from_date;
+  const toDate = req.query.to_date;
 
   let condition = {};
-  /*
   if (locationId) {
     condition = { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null };
   }
-  if (userId) {
-    condition = { userId: userId ? { [Op.like]: `%${userId}%` } : null };
+  if (fromDate) {
+    condition = { complaint_added_date: fromDate ? { [Op.lte]: `%${fromDate}%` } : null };
   }
-  */
+
+  if (toDate) {
+    condition = { complaint_added_date: toDate ? { [Op.gte]: `%${toDate}%` } : null };
+  }
 
   const complaint_list = await Complaint.findAll({
     where: condition,
