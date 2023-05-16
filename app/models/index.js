@@ -65,6 +65,11 @@ foreignKey: "departmentId",
 db.user.belongsTo(db.locations, {
   foreignKey: "locationId",
     as: "location",
-  });
+});
+
+db.departments.belongsTo(db.locations, {
+  foreignKey: "locationId",
+    as: "location",
+});
 
 module.exports = db;

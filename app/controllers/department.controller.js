@@ -1,62 +1,32 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const Department = db.departments;
+const Location = db.locations;
 
-// Create and Save a new Department
+
+// Create and Save a new Location
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Department Name can not be empty!",
-    });
-    return;
-  }
+  // Validating the request
+    if (!req.body.name) {
+      res.status(400).send({
+        message: "Name can be placed here!"
+      });
+      return;
+    }
 
   // Create a Department
   const department = {
     name: req.body.name,
-    address: req.body.address,
-    city: req.body.city,
-    contactNo: req.body.contactNo,
+    locationId: req.body.locationId
   };
 
-  // Save Department in the database
-  Department.create(department)
-    .then((data) => {
-      const department = {
-        name: req.body.name,
-        address: req.body.address,
-        city: req.body.city,
-        contactNo: req.body.contactNo,
-      };
-
-      Department.update(department, {
-        where: { id: req.body.departmentId },
-      })
-        .then((num) => {
-          if (num == 1) {
-            console.log(
-              "Department Paid & Remainng Amount updated successfully."
-            );
-          } else {
-            console.log(
-              "Cannot update Department with id=${req.body.departmentId}. Maybe Department was not found or req.body is empty!"
-            );
-          }
-        })
-        .catch((err) => {
-          res.status(500).send({
-            message:
-              "Error updating Department with id=" + req.body.departmentId,
-          });
-        });
-
-      res.send(data);
-    })
-    .catch((err) => {
+  // Saving the Department in the database
+  Department.create(department).then(data => {
+      res.send("Department Added successfully.");
+    }).catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Department.",
+        Message:
+          err.message || "Some errors will occur when creating a Department"
       });
     });
 };
@@ -66,7 +36,16 @@ exports.findAll = (req, res) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
-  Department.findAll({ where: condition })
+  Department.findAll({
+    where: condition,
+    include: [
+      {
+        model: Location,
+        as: "location",
+        attributes: ["name"],
+      },
+    ],
+  })
     .then((data) => {
       res.send(data);
     })

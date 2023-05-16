@@ -11,15 +11,8 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             type: Sequelize.STRING
         },
-        address: {
-            type: Sequelize.STRING
-        },
-        city: {
-            allowNull: false,
-            type: Sequelize.STRING
-        },
-        contactNo: {
-            type: Sequelize.STRING
+        locationId: {
+            type: Sequelize.INTEGER
         }
     });
   

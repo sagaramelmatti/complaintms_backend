@@ -485,11 +485,11 @@ exports.createComplaintReport = async (req, res) => {
     condition = { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null };
   }
   if (fromDate) {
-    condition = { complaint_added_date: fromDate ? { [Op.lte]: `%${fromDate}%` } : null };
+    condition = { complaint_added_date: fromDate ? { [Op.gte]: `%${fromDate}%` } : null };
   }
 
   if (toDate) {
-    condition = { complaint_added_date: toDate ? { [Op.gte]: `%${toDate}%` } : null };
+    condition = { complaint_added_date: toDate ? { [Op.lte]: `%${toDate}%` } : null };
   }
 
   const complaint_list = await Complaint.findAll({
