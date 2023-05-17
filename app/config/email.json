@@ -1,5 +1,7 @@
 {
      "sender_email" : "admin@sharemydish.com",
     "sender_password" : "*xio!h#3", 
-    "admin_email" : "sagarmelmatti@gmail.com"
+    "admin_email" : "debasish.dey@brplind.com",
+    "host" : "smtp.gmail.com",
+    "port" : "587"
 }

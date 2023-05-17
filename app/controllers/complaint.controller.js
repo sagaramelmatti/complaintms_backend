@@ -10,6 +10,8 @@ const email_config = require("../config/email.json");
 
 var sender_email = email_config.sender_email;
 var sender_password = email_config.sender_password;
+var sender_host = email_config.host;
+var sender_port = email_config.port;
 var admin_email = email_config.admin_email;
 
 // Create and Save a new Complaint
@@ -42,14 +44,16 @@ exports.create = async (req, res) => {
     User.findByPk(id)
       .then((user_data) => {
         if (user_data) {
+          
           const transporter = nodemailer.createTransport({
-            host: 'us2.smtp.mailhostbox.com',
-            port: 25,
+            host: sender_host,
+            port: sender_port,
             auth: {
-              user: sender_email,
-              pass: sender_password,
+                user: sender_email,
+                pass: sender_password,
             },
-          }); transporter.verify().then(console.log).catch(console.error);
+          });
+          transporter.verify().then(console.log).catch(console.error);
 
           var mailOptions = {
             from: sender_email,
