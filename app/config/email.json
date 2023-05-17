@@ -1,6 +1,6 @@
 {
-     "sender_email" : "admin@sharemydish.com",
-    "sender_password" : "*xio!h#3", 
+    "sender_email" : "info.brpl@brplind.com",
+    "sender_password" : "Brpl@2023",
     "admin_email" : "debasish.dey@brplind.com",
     "host" : "smtp.gmail.com",
     "port" : "587"
