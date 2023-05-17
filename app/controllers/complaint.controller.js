@@ -4,8 +4,10 @@ const Location = db.locations;
 const User = db.user;
 const Department = db.departments;
 const Op = db.Sequelize.Op;
+const sequelize = require("sequelize");
 const nodemailer = require('nodemailer');
 const user = require("../controllers/user.controller.js");
+const admin = require("../controllers/admin.controller.js");
 const email_config = require("../config/email.json");
 
 var sender_email = email_config.sender_email;
@@ -24,6 +26,12 @@ exports.create = async (req, res) => {
     return;
   }
 
+  let max = await Complaint.max('ticketNumber');
+  if(max == null || max == undefined){
+    max = 0;
+  }
+  const max_value = parseInt(max) + 1;
+
   // Creating a Tutorial
   let complaint = {
     title: req.body.title,
@@ -32,10 +40,12 @@ exports.create = async (req, res) => {
     locationId: req.body.locationId,
     status: req.body.status,
     complaint_added_date: new Date(),
-    ticketNumber: Math.floor(Math.random() * 90000) + 10000
+    ticketNumber: max_value,
+    ticketNumberSequance: "0000"+max_value
   };
 
   try {
+    
     const complaint_result = await Complaint.create(complaint);
     const location_result = await Location.findByPk(complaint.locationId);
 
@@ -60,7 +70,7 @@ exports.create = async (req, res) => {
             subject: 'New Complaint Added',
             text: 'New Complaint Added', // plain text body
             html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,  <SPAN STYLE="font-size:13.0pt"> </br>your Complaint has been registered, </br> Your complaint will be processed by confirm person  '+
-            ' <br> Kindly keep Ticket Numbet for future referance : ' + complaint_result.ticketNumber + '',
+            ' <br> Kindly keep Ticket Numbet for future referance : ' + complaint_result.ticketNumberSequance + '',
 
           };
 
@@ -82,7 +92,7 @@ exports.create = async (req, res) => {
               '<p> Complaint details mentioned below : <p>' +
               ' User Name: ' + user_data.name +
               ' <br> Email : ' + user_data.email +
-              ' <br> Ticket Number : ' + complaint_result.ticketNumber +
+              ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance +
               ' <br> Location : ' + location_result.name +
               ' <br> Subject : ' + complaint_result.title +
               ' <br> Description: ' + complaint_result.description + '',
@@ -108,8 +118,8 @@ exports.create = async (req, res) => {
               ' <br> Email : ' + user_data.email +
               ' <br> Location : ' + location_result.name +
               ' <br> Subject : ' + complaint_result.title +
-              ' <br> Description : ' + complaint_result.ticketNumber +
-              ' <br> Ticket Number : ' + complaint_result.ticketNumber + '',
+              ' <br> Description : ' + complaint_result.description +
+              ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance + '',
           };
 
           transporter.sendMail(mailOptionsLocationHead, function (error, info) {
@@ -238,6 +248,8 @@ exports.findComplaintByUserId = (req, res) => {
       });
     });
 };
+
+
 
 function capitalizeFirstLetter(str) {
   // converting first letter to uppercase

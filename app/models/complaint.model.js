@@ -33,7 +33,10 @@ module.exports = (sequelize, Sequelize) => {
             type: 'TIMESTAMP'
         },
         ticketNumber: {
-            type: Sequelize.STRING(8)
+            type: Sequelize.INTEGER
+        },
+        ticketNumberSequance: {
+            type: Sequelize.STRING(10)
         }
     });
   
