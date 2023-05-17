@@ -27,7 +27,6 @@ exports.create = async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     userId: req.body.userId,
-    departmentId: req.body.departmentId,
     locationId: req.body.locationId,
     status: req.body.status,
     complaint_added_date: new Date()
@@ -36,7 +35,6 @@ exports.create = async (req, res) => {
   try {
     const complaint_result = await Complaint.create(complaint);
     const location_result = await Location.findByPk(complaint.locationId);
-    const department_result = await Location.findByPk(complaint.departmentId);
 
     console.log('success');
 
@@ -81,9 +79,8 @@ exports.create = async (req, res) => {
               ' User Name: ' + user_data.name +
               ' <br> Email : ' + user_data.email +
               ' <br> Location : ' + location_result.name +
-              ' <br> Department : ' + department_result.name +
-              ' <br> Complaint In Short : ' + complaint_result.title +
-              ' <br> Complaint Description: ' + complaint_result.description + '',
+              ' <br> Subject : ' + complaint_result.title +
+              ' <br> Description: ' + complaint_result.description + '',
 
           };
 
@@ -105,8 +102,8 @@ exports.create = async (req, res) => {
               ' User Name: ' + user_data.name +
               ' <br> Email : ' + user_data.email +
               ' <br> Location : ' + location_result.name +
-              ' <br> Complaint In Short : ' + complaint_result.title +
-              ' <br> Complaint Description: ' + complaint_result.description + '',
+              ' <br> Subject : ' + complaint_result.title +
+              ' <br> Description : ' + complaint_result.description + '',
           };
 
           transporter.sendMail(mailOptionsLocationHead, function (error, info) {
@@ -216,11 +213,6 @@ exports.findComplaintByUserId = (req, res) => {
       {
         model: User,
         as: "user",
-        attributes: ["name"],
-      },
-      {
-        model: Department,
-        as: "department",
         attributes: ["name"],
       },
       {

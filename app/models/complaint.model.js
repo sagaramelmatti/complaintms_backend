@@ -17,9 +17,6 @@ module.exports = (sequelize, Sequelize) => {
         userId: {
             type: Sequelize.INTEGER
         },
-        departmentId: {
-            type: Sequelize.INTEGER
-        },
         locationId: {
             type: Sequelize.INTEGER
         },

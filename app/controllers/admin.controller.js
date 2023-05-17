@@ -37,7 +37,7 @@ exports.findAllUser = (req, res) => {
   if (userId) {
     condition = { userId: userId ? { [Op.like]: `%${userId}%` } : null };
   }
-
+  condition = { userType: { [Op.ne]: 'A' }  };
 
   //var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
 
@@ -431,7 +431,6 @@ exports.createComplaint = (req, res) => {
     title: req.body.title,
     description: req.body.description,
     userId: req.body.userId,
-    departmentId: req.body.departmentId,
     status: req.body.status,
     complaint_added_date: new Date()
   };
@@ -514,11 +513,6 @@ exports.createComplaintReport = async (req, res) => {
         model: User,
         as: "user",
         attributes: ["email"],
-      },
-      {
-        model: Department,
-        as: "department",
-        attributes: ["name"],
       },
       {
         model: Location,

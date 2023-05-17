@@ -6,6 +6,7 @@ const User = db.user;
 const Role = db.role;
 const UserRoles = db.userRoles;
 const Location = db.locations;
+const Department = db.departments;
 const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
@@ -18,7 +19,7 @@ exports.signup = async (req, res) => {
     // Save User to Database
 
     const location_result = await Location.findByPk(req.body.locationId);
-    const department_result = await Location.findByPk(req.body.departmentId);
+    const department_result = await Department.findByPk(req.body.departmentId);
 
     User.create({
         name: req.body.name,
@@ -26,7 +27,7 @@ exports.signup = async (req, res) => {
         password: bcrypt.hashSync(req.body.password, 8),
         departmentId: req.body.departmentId,
         locationId: req.body.locationId,
-        status: 'D',
+        status: 'A',
         userType: 'U'
     })
         .then(user => {
@@ -37,6 +38,7 @@ exports.signup = async (req, res) => {
                 res.send({ message: "User registered successfully!" });
 
                 const transporter = nodemailer.createTransport({
+					
                     host: 'us2.smtp.mailhostbox.com',
                     port: 587,
                     auth: {
@@ -50,7 +52,7 @@ exports.signup = async (req, res) => {
                     to: user.email,
                     subject: 'Employee Registration',
                     text: 'Employee registered succresfully', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(user.name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully,  Admin will review ',
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(user.name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully',
                 
                   };
                   
@@ -120,9 +122,7 @@ exports.signin = (req, res) => {
     })
         .then(user => {
             if (!user) {
-                return res.status(404).send({ message: "User Not found." });
-            } else if(user.status == 'D'){
-                return res.status(401).send({ message: "User Not Activated yet." });
+                return res.status(404).send({ message: "Invalid Email / Password." });
             }
 
             var passwordIsValid = bcrypt.compareSync(
