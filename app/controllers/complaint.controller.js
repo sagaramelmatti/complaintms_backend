@@ -69,7 +69,7 @@ exports.create = async (req, res) => {
             to: user_data.email,
             subject: 'New Complaint Added',
             text: 'New Complaint Added', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,  <SPAN STYLE="font-size:13.0pt"> </br>your Complaint has been registered, </br> Your complaint will be processed by confirm person  '+
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,<br/>  <SPAN STYLE="font-size:13.0pt"> </br>your Complaint has been registered, </br> Your complaint will be processed by confirm person  '+
             ' <br> Kindly keep Ticket Numbet for future referance : ' + complaint_result.ticketNumberSequance + '',
 
           };
