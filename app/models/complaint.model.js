@@ -9,7 +9,7 @@ module.exports = (sequelize, Sequelize) => {
 		},
         title: {
             allowNull: false,
-            type: Sequelize.STRING(300)
+            type: Sequelize.STRING(50)
         },
         description: {
             type: Sequelize.STRING(500)
@@ -31,8 +31,10 @@ module.exports = (sequelize, Sequelize) => {
         },
         complaint_resolved_date: {
             type: 'TIMESTAMP'
+        },
+        ticketNumber: {
+            type: Sequelize.STRING(8)
         }
-
     });
   
     return Complaint;

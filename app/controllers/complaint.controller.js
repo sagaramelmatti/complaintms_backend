@@ -31,14 +31,13 @@ exports.create = async (req, res) => {
     userId: req.body.userId,
     locationId: req.body.locationId,
     status: req.body.status,
-    complaint_added_date: new Date()
+    complaint_added_date: new Date(),
+    ticketNumber: Math.floor(Math.random() * 90000) + 10000
   };
 
   try {
     const complaint_result = await Complaint.create(complaint);
     const location_result = await Location.findByPk(complaint.locationId);
-
-    console.log('success');
 
     const id = complaint.userId;
     User.findByPk(id)
@@ -60,7 +59,8 @@ exports.create = async (req, res) => {
             to: user_data.email,
             subject: 'New Complaint Added',
             text: 'New Complaint Added', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> your Complaint has been submitted, </br> Admin will review ',
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,  <SPAN STYLE="font-size:13.0pt"> </br>your Complaint has been registered, </br> Your complaint will be processed by confirm person  '+
+            ' <br> Kindly keep Ticket Numbet for future referance : ' + complaint_result.ticketNumber + '',
 
           };
 
@@ -82,6 +82,7 @@ exports.create = async (req, res) => {
               '<p> Complaint details mentioned below : <p>' +
               ' User Name: ' + user_data.name +
               ' <br> Email : ' + user_data.email +
+              ' <br> Ticket Number : ' + complaint_result.ticketNumber +
               ' <br> Location : ' + location_result.name +
               ' <br> Subject : ' + complaint_result.title +
               ' <br> Description: ' + complaint_result.description + '',
@@ -107,7 +108,8 @@ exports.create = async (req, res) => {
               ' <br> Email : ' + user_data.email +
               ' <br> Location : ' + location_result.name +
               ' <br> Subject : ' + complaint_result.title +
-              ' <br> Description : ' + complaint_result.description + '',
+              ' <br> Description : ' + complaint_result.ticketNumber +
+              ' <br> Ticket Number : ' + complaint_result.ticketNumber + '',
           };
 
           transporter.sendMail(mailOptionsLocationHead, function (error, info) {
