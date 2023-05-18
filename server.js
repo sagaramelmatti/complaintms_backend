@@ -41,6 +41,7 @@ require("./app/routes/department.routes")(app);
 require("./app/routes/complaint.routes")(app);
 require("./app/routes/admin.routes")(app);
 require("./app/routes/location.routes")(app);
+require("./app/routes/supervisor.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8081;
