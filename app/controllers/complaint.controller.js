@@ -69,7 +69,7 @@ exports.create = async (req, res) => {
             to: user_data.email,
             subject: 'New Complaint Added',
             text: 'New Complaint Added', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,<br/>  <SPAN STYLE="font-size:13.0pt"> </br>your Complaint has been registered, </br> Your complaint will be processed by confirm person  '+
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,<br/>  <SPAN STYLE="font-size:13.0pt"> </br>your Complaint has been registered, </br> Your complaint will be processed by concern person  '+
             ' <br> Kindly keep Ticket Numbet for future referance : ' + complaint_result.ticketNumberSequance + '',
 
           };
@@ -95,7 +95,8 @@ exports.create = async (req, res) => {
               ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance +
               ' <br> Location : ' + location_result.name +
               ' <br> Subject : ' + complaint_result.title +
-              ' <br> Description: ' + complaint_result.description + '',
+              ' <br> Description: ' + complaint_result.description +
+              ' <br> Complaint Date: ' + getFormattedDate(complaint_result.complaint_added_date)+ '',
 
           };
 
@@ -119,7 +120,8 @@ exports.create = async (req, res) => {
               ' <br> Location : ' + location_result.name +
               ' <br> Subject : ' + complaint_result.title +
               ' <br> Description : ' + complaint_result.description +
-              ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance + '',
+              ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance +
+              ' <br> Complaint Date: ' + getFormattedDate(complaint_result.complaint_added_date)+ '',
           };
 
           transporter.sendMail(mailOptionsLocationHead, function (error, info) {
@@ -225,18 +227,26 @@ exports.findComplaintByUserId = (req, res) => {
 
   Complaint.findAll({
     where: condition,
+	attributes: [
+      "id",
+	  "ticketNumber",
+	  "ticketNumberSequance",
+      "title",
+      "description",
+      "status",
+      "comment",
+      [sequelize.fn('date_format', sequelize.col('complaint_added_date'), '%d-%m-%Y %H:%i'), 'complaint_added_date'],
+      [sequelize.fn('date_format', sequelize.col('complaint_resolved_date'), '%d-%m-%Y %H:%i'), 'complaint_resolved_date'],
+    ],
+
     include: [
-      {
-        model: User,
-        as: "user",
-        attributes: ["name"],
-      },
       {
         model: Location,
         as: "location",
         attributes: ["name"],
       },
     ],
+	
   })
     .then((data) => {
       res.send(data);
@@ -255,4 +265,33 @@ function capitalizeFirstLetter(str) {
   // converting first letter to uppercase
   const capitalized = str.replace(/^./, str[0].toUpperCase());
   return capitalized;
+}
+
+
+function getFormattedDate(date) {
+  
+  let today = new Date();
+  let dd = today.getDate();
+
+  let mm = today.getMonth()+1; 
+  const yyyy = today.getFullYear();
+  if(dd<10) 
+  {
+      dd=`0${dd}`;
+  } 
+
+  if(mm<10) 
+  {
+      mm=`0${mm}`;
+  } 
+  today = `${mm}-${dd}-${yyyy}`;
+  console.log(today);
+  today = `${mm}/${dd}/${yyyy}`;
+  console.log(today);
+  today = `${dd}-${mm}-${yyyy}`;
+  console.log(today);
+  today = `${dd}/${mm}/${yyyy}`;
+  console.log(today);
+
+  return today;
 }
