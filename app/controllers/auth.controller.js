@@ -53,16 +53,21 @@ exports.signup = async (req, res) => {
                     from: sender_email,
                     to: user.email,
                     subject: 'Employee Registration',
-                    text: 'Employee registered succresfully', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(user.name) +' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> You have been registered succesfully',
-                
+                    text: 'Employee registered successfully', // plain text body
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear '+ capitalizeFirstLetter(user.name) +' </b></span>, </br> <SPAN STYLE="font-size:13.0pt"> <br/>You have been registered succesfully<br/>' +
+					' <p> For login check details below : <p>' +
+					' <br>Email : ' + req.body.email +
+					' <br>Password : ' + req.body.password +
+					' <br> Location : ' + location_result.name +
+					' <br> Department : ' + department_result.name + '',
+
                   };
                   
                   transporter.sendMail(mailOptions, function(error, info){
                     if (error) {
                       console.log(error);
                     } else {
-                      console.log('Email sent: ' + info.response);
+                      console.log('Email sent to user: ' + info.response);
                     }
                   }); 
 
@@ -71,12 +76,12 @@ exports.signup = async (req, res) => {
                     to: admin_email,
                     subject: 'Review New Employee',
                     text: 'New Employee has been registered', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin You have registered new Employee , kindly check  : ,' +
-                    '<br> Details mentioned below: '+
-                    '<p>    <br> Name: ' + capitalizeFirstLetter(user.name) + 
-                    '       <br> Email : ' + user.email +
-                    '       <br> Location : ' + location_result.name +
-                    '       <br> Department : ' + department_result.name+'',
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin, <br/> You have registered new Employee ' +
+                    '<br/> Kinldy check details mentioned below: '+
+                    '<p> <br/> Name: ' + capitalizeFirstLetter(user.name) + 
+                    ' <br/> Email : ' + user.email +
+                    ' <br/> Location : ' + location_result.name +
+                    ' <br/> Department : ' + department_result.name+'',
                 
                   };
                   
@@ -84,7 +89,7 @@ exports.signup = async (req, res) => {
                     if (error) {
                       console.log(error);
                     } else {
-                      console.log('Email sent: ' + info.response);
+                      console.log('Email sent to admin: ' + info.response);
                     }
                   }); 
 
