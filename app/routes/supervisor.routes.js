@@ -18,7 +18,7 @@ module.exports = (app) => {
   /* Complaint API */
 
   // Retrieve all Complaint
-  router.get("/complaints/:locationId", supervisor.findAllComplaints);
+  router.get("/complaints/:locationId", supervisor.findComplaintByLocationId);
 
   // Retrieve selected Complaint
   router.get("/complaints/:id", supervisor.findComplaint);

@@ -271,6 +271,9 @@ exports.findComplaintByUserId = (req, res) => {
 
 // Update a Complaint by the id in the request
 exports.updateComplaintStatus = async (req, res) => {
+	
+  const date = require('date-and-time');
+	
   const id = req.params.id;
   // Create a Complaint
   const complaint = {
@@ -309,10 +312,10 @@ exports.updateComplaintStatus = async (req, res) => {
             text: 'Complaint Change Status', // plain text body
             html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_result.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> Your Complaint status has been chnaged </br>' +
               '<p> Complaint details mentioned below : <p>' +
-              ' Complaint Status: ' + complaint.status +
-              ' <br>Comment : ' + complaint.comment +
-			  ' <br> Complaint Date : ' + getFormattedDate(complaint.complaint_added_date) +
-			  ' <br> Resolved Date : ' + getFormattedDate(complaint.complaint_resolved_date) + '',
+              ' Complaint Status: ' + complaint_data.status +
+              ' <br>Comment : ' + complaint_data.comment +
+			  ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
+			  ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') +
           };
 
           transporter.sendMail(usermailOptions, function (error, info) {
@@ -323,53 +326,26 @@ exports.updateComplaintStatus = async (req, res) => {
             }
           });
 
-			/*
-          var mailOptionsLocationHead = {
+		  var mailOptionsIncharge = {
             from: sender_email,
             to: location_result.email,
             subject: 'Complaint Change Status',
             text: 'Complaint Change Status', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(location_result.headName) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> Complaint status has been changed for your location, </br> ' +
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(location_result.headName) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> Complaint status has been changed , </br> ' +
               '<p> Details mentioned below: <p>' +
-			  ' Ticket Number: ' + complaint_result.ticketNumberSequance +
               ' User Name: ' + user_result.name +
               ' <br> Email : ' + user_result.email +
-              ' <br> Subject : ' + complaint_result.title +
-              ' <br> Description: ' + complaint_result.description +
-              ' <br> Status : ' + complaint.status +
-              ' <br> Comment : ' + complaint.comment +
-			  ' <br> Complaint Date : ' + getFormattedDate(complaint.complaint_added_date) +
-			  ' <br> Resolved Date : ' + getFormattedDate(complaint.complaint_resolved_date) + '',
+              ' <br> Subject : ' + complaint_data.title +
+              ' <br> Description: ' + complaint_data.description +
+              ' <br> Status : ' + complaint_data.status +
+              ' <br> Comment : ' + complaint_data.comment +
+			  ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
+			  ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') +
+			  ' <br> Ticket Number : ' + complaint_data.ticketNumberSequance + '',
+			  
           };
 
-          transporter.sendMail(mailOptionsLocationHead, function (error, info) {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('Email sent: ' + info.response);
-            }
-          });
-		  */
-		  
-		  var mailOptionsAdmin = {
-            from: sender_email,
-            to: location_result.email,
-            subject: 'Complaint Change Status',
-            text: 'Complaint Change Status', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(location_result.headName) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> Dear Admin Complaint status has been changed , </br> ' +
-              '<p> Details mentioned below: <p>' +
-			  ' Ticket Number: ' + complaint_result.ticketNumberSequance +
-              ' User Name: ' + user_result.name +
-              ' <br> Email : ' + user_result.email +
-              ' <br> Subject : ' + complaint_result.title +
-              ' <br> Description: ' + complaint_result.description +
-              ' <br> Status : ' + complaint.status +
-              ' <br> Comment : ' + complaint.comment +
-			  ' <br> Complaint Date : ' + getFormattedDate(complaint.complaint_added_date) +
-			  ' <br> Resolved Date : ' + getFormattedDate(complaint.complaint_resolved_date) + '',
-          };
-
-          transporter.sendMail(mailOptionsAdmin, function (error, info) {
+          transporter.sendMail(mailOptionsIncharge, function (error, info) {
             if (error) {
               console.log(error);
             } else {
@@ -586,31 +562,4 @@ function capitalizeFirstLetter(str) {
   // converting first letter to uppercase
   const capitalized = str.replace(/^./, str[0].toUpperCase());
   return capitalized;
-}
-
-function getFormattedDate(date) {
-  
-  let dd = date.getDate();
-
-  let mm = today.getMonth()+1; 
-  const yyyy = today.getFullYear();
-  if(dd<10) 
-  {
-      dd=`0${dd}`;
-  } 
-
-  if(mm<10) 
-  {
-      mm=`0${mm}`;
-  } 
-  today = `${mm}-${dd}-${yyyy}`;
-  console.log(today);
-  today = `${mm}/${dd}/${yyyy}`;
-  console.log(today);
-  today = `${dd}-${mm}-${yyyy}`;
-  console.log(today);
-  today = `${dd}/${mm}/${yyyy}`;
-  console.log(today);
-
-  return today;
 }

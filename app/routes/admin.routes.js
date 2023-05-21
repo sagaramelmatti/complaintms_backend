@@ -2,6 +2,7 @@ const { authJwt } = require("../middleware");
 const admin = require("../controllers/admin.controller.js");
 const user = require("../controllers/user.controller.js");
 const complaint = require("../controllers/complaint.controller.js");
+const cron = require("node-cron");
 
 module.exports = (app) => {
   app.use(function (req, res, next) {
@@ -59,4 +60,11 @@ module.exports = (app) => {
    router.get("/reports/complaints/", admin.fetchComplaintReport);
 
   app.use("/api/admin", router);
+
+  /*
+  cron.schedule("* 5 * * * *", () => {
+    console.log("Running every minute");
+  });
+  */
+
 };

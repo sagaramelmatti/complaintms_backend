@@ -32,7 +32,7 @@ db.sequelize.sync()
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Schhol Fees Management application." });
+  //res.json({ message: "Welcome to Schhol Fees Management application." });
 });
 
 require('./app/routes/auth.routes')(app);
