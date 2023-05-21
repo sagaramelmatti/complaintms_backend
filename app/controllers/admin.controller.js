@@ -315,8 +315,8 @@ exports.updateComplaintStatus = async (req, res) => {
               ' Complaint Status: ' + complaint_data.status +
               ' <br>Comment : ' + complaint_data.comment +
 			  ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
-			  ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') +
-          };
+			  ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') + '',
+          }
 
           transporter.sendMail(usermailOptions, function (error, info) {
             if (error) {
