@@ -308,3 +308,10 @@ exports.createComplaintReport = async (req, res) => {
   }
 
 };
+
+
+function capitalizeFirstLetter(str) {
+  // converting first letter to uppercase
+  const capitalized = str.replace(/^./, str[0].toUpperCase());
+  return capitalized;
+}

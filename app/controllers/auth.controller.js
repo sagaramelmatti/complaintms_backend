@@ -168,6 +168,36 @@ exports.signin = (req, res) => {
         });
 };
 
+// Update a Location by the id in the request
+exports.changePassword = (req, res) => {
+  const id = req.params.id;
+  
+  // Create a Complaint
+  const user = {
+    password: bcrypt.hashSync(req.body.newPassword, 8),
+  };
+
+  User.update(user, {
+    where: { id: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "User password was updated successfully.",
+        });
+      } else {
+        res.send({
+          message: `Cannot update User password with id=${id}.!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error updating User password with id=" + id,
+      });
+    });
+};
+
 function capitalizeFirstLetter(str) {
     // converting first letter to uppercase
     const capitalized = str.replace(/^./, str[0].toUpperCase());

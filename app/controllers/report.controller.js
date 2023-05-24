@@ -1,26 +1,81 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const db = require("../models");
+const Complaint = db.complaints;
+const User = db.user;
+const Location = db.locations;
+const Op = db.Sequelize.Op;
 const pdf = require('html-pdf');
-const cors = require('cors');
+const pdfTemplate = require('../documents');
+const nodemailer = require('nodemailer');
+const sequelize = require("sequelize");
 
-const pdfTemplate = require('./documents');
+// Retrieve all Payments from the database.
+exports.create = async (req, res) => {
 
-const app = express();
-
-app.use(cors());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
-
-app.post('/create-pdf', (req, res) => {
-    pdf.create(pdfTemplate(req.body), {}).toFile('result.pdf', (err) => {
-        if(err) {
-            res.send(Promise.reject());
-        }
-
-        res.send(Promise.resolve());
+    const locationId = req.query.locationId;
+    const fromDate = req.query.from_date;
+    const toDate = req.query.to_date;
+  
+    let condition = {};
+    if (locationId) {
+      condition = { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null };
+    }
+    if (fromDate) {
+      condition = { complaint_added_date: fromDate ? { [Op.gte]: `%${fromDate}%` } : null };
+    }
+  
+    if (toDate) {
+      condition = { complaint_added_date: toDate ? { [Op.lte]: `%${toDate}%` } : null };
+    }
+  
+    const complaint_list = await Complaint.findAll({
+      where: condition,
+      attributes: [
+        "id",
+        "title",
+        "description",
+        "status",
+        "comment",
+        [sequelize.fn('date_format', sequelize.col('complaint_added_date'), '%Y-%m-%d %H:%i'), 'complaint_added_date'],
+        [sequelize.fn('date_format', sequelize.col('complaint_resolved_date'), '%Y-%m-%d %H:%i'), 'complaint_resolved_date'],
+      ],
+  
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["name"],
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: ["email"],
+        },
+        {
+          model: Location,
+          as: "location",
+          attributes: ["name"],
+        },
+      ],
     });
-});
-
-app.get('/fetch-pdf', (req, res) => {
-    res.sendFile(`${__dirname}/result.pdf`)
-})
+  
+    if(complaint_list){
+      //console.log("complaint_added_date="+complaint_list[0].complaint_added_date);
+      pdf.create(pdfTemplate(complaint_list), {}).toFile(`${__dirname}/result.pdf`, (err) => {
+        if(err) {
+          res.send(Promise.reject());
+      }
+  
+      res.send(Promise.resolve());
+    });
+    } else {
+      res.status(404).send({
+        message: `Cannot find Complaint with id=${id}.`,
+      });
+    }
+  
+  };
+  
+  // Retrieve all Students from the database.
+exports.fetchComplaintReport = (req, res) => {
+  res.sendFile(`${__dirname}/result.pdf`)
+};

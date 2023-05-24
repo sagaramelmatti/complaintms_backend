@@ -1,5 +1,5 @@
 const { authJwt } = require("../middleware");
-const locations = require("../controllers/location.controller.js");
+const location = require("../controllers/location.controller.js");
 
 module.exports = app => {
     
@@ -15,18 +15,18 @@ module.exports = app => {
   
     // Create a new Tutorial
     // Retrieve all Tutorials
-    router.get("/",  locations.findAll);
+    router.get("/",  location.findAll);
   
     // Retrieve a single Tutorial with id
-    router.get("/:id",  locations.findOne);
+    router.get("/:id",  location.findOne);
 
-    router.post("/", locations.create);
+    router.post("/", location.create);
   
     // Update a Tutorial with id
-    router.put("/:id",  locations.update);
+    router.put("/:id",  location.update);
   
     // Delete a Tutorial with id
-    router.delete("/:id",  locations.delete);
+    router.delete("/:id",  location.delete);
   
-    app.use('/api/locations', router);
+    app.use('/api/admin/locations', router);
   };

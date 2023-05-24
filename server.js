@@ -35,13 +35,15 @@ app.get("/", (req, res) => {
   //res.json({ message: "Welcome to Schhol Fees Management application." });
 });
 
+require('./app/routes/adminComplaint.routes')(app);
 require('./app/routes/auth.routes')(app);
-require('./app/routes/user.routes')(app);
 require("./app/routes/department.routes")(app);
-require("./app/routes/complaint.routes")(app);
-require("./app/routes/admin.routes")(app);
 require("./app/routes/location.routes")(app);
+require('./app/routes/report.routes')(app);
+require('./app/routes/user.routes')(app);
 require("./app/routes/supervisor.routes")(app);
+require("./app/routes/userComplaint.routes")(app);
+
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8081;
