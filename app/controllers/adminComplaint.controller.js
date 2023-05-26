@@ -54,6 +54,11 @@ exports.findAll = (req, res) => {
             {
                 model: User,
                 as: "user",
+                attributes: ["id"],
+            },
+            {
+                model: User,
+                as: "user",
                 attributes: ["name"],
             },
             {

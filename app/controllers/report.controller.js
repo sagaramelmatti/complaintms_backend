@@ -14,6 +14,10 @@ exports.create = async (req, res) => {
     const locationId = req.query.locationId;
     const fromDate = req.query.from_date;
     const toDate = req.query.to_date;
+
+    console.log("locationId"+locationId);
+    console.log("fromDate"+fromDate);
+    console.log("toDate"+toDate);
   
     let condition = {};
     if (locationId) {
@@ -57,6 +61,9 @@ exports.create = async (req, res) => {
         },
       ],
     });
+
+
+    //console.log(complaint_list);
   
     if(complaint_list){
       //console.log("complaint_added_date="+complaint_list[0].complaint_added_date);
@@ -72,8 +79,7 @@ exports.create = async (req, res) => {
         message: `Cannot find Complaint with id=${id}.`,
       });
     }
-  
-  };
+};
   
   // Retrieve all Students from the database.
 exports.fetchComplaintReport = (req, res) => {

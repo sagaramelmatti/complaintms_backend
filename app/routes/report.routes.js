@@ -16,6 +16,9 @@ module.exports = (app) => {
    // Retrieve all Complaint
    router.post("/complaints", report.create);
 
+   // Retrieve all Complaint
+   router.get("/complaints/", report.fetchComplaintReport);
+
   app.use("/api/admin/reports", router);
 
   /*

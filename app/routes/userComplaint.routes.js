@@ -29,7 +29,7 @@ module.exports = function (app) {
     router.get("/:userId", userComplaint.findAll);
   
     // Retrieve a single Tutorial with id
-    router.get("/id/:id", userComplaint.findOne);
+    router.get("/:userId/:id", userComplaint.findOne);
 
     router.post("/", userComplaint.create);
   

@@ -40,7 +40,7 @@ exports.findComplaint = (req, res) => {
 };
 
 // Retrieve all Payments from the database.
-exports.findComplaintByLocationId = (req, res) => {
+exports.findByLocationId = (req, res) => {
 
   const locationId = req.params.locationId;
   let condition = { locationId: { [Op.eq]: locationId } };
@@ -74,6 +74,11 @@ exports.findComplaintByLocationId = (req, res) => {
         model: Department,
         as: "department",
         attributes: ["name"],
+      },
+      {
+        model: Location,
+        as: "location",
+        attributes: ["id"],
       }
     ],
   })
@@ -89,7 +94,7 @@ exports.findComplaintByLocationId = (req, res) => {
 };
 
 // Update a Complaint by the id in the request
-exports.updateComplaintStatus = async (req, res) => {
+exports.updateStatus = async (req, res) => {
 
   const date = require('date-and-time');
 
@@ -219,9 +224,8 @@ exports.deleteComplaint = (req, res) => {
 
 
 // Update a Complaint by the id in the request
-exports.updateComplaint = (req, res) => {
+exports.update = (req, res) => {
   const id = req.params.id;
-
 
   Complaint.update(req.body, {
     where: { id: id },
