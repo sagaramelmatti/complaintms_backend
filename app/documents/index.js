@@ -87,7 +87,6 @@ return `
                   <th>Description</th>
                   <th>Name</th>
                   <th>Location</th>
-                  <th>Department</th>
                   <th>Status</th>
                   <th>Comment</th>
                </tr>
@@ -99,7 +98,6 @@ return `
                         <td>${item.description}</td>
                         <td>${item.user.name}</td>
                         <td>${item.location.name}</td>
-                        <td>${item.department.name}</td>
                         <td>${item.status}</td>
                         <td>${item.comment}</td>
                   </tr> `

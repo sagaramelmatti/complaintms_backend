@@ -32,7 +32,11 @@ exports.create = async (req, res) => {
     }
   
     const complaint_list = await Complaint.findAll({
-      where: condition,
+      where: {
+        locationId : locationId ? { [Op.like]: `%${locationId}%` } : null,
+        complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.gte]: `%${fromDate}%` } : null
+        //complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.lte]: `%${toDate}%` } : null,
+      },
       attributes: [
         "id",
         "title",
@@ -64,7 +68,7 @@ exports.create = async (req, res) => {
 
 
     //console.log(complaint_list);
-  
+    
     if(complaint_list){
       //console.log("complaint_added_date="+complaint_list[0].complaint_added_date);
       pdf.create(pdfTemplate(complaint_list), {}).toFile(`${__dirname}/result.pdf`, (err) => {
