@@ -63,6 +63,11 @@ exports.create = async (req, res) => {
           as: "location",
           attributes: ["name"],
         },
+        {
+          model: Department,
+          as: "department",
+          attributes: ["name"],
+        },
       ],
     });
 

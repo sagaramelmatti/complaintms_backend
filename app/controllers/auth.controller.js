@@ -163,6 +163,7 @@ exports.signin = (req, res) => {
                     name: user.name,
                     email: user.email,
 					          locationId: user.locationId,
+                    departmentId: user.departmentId,
                     roles: authorities,
                     accessToken: token
                 });

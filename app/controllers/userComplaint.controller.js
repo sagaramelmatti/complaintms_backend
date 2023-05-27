@@ -26,7 +26,7 @@ exports.findAll = (req, res) => {
     where: condition,
     attributes: [
       "id",
-	  "userId",
+	    "userId",
       "ticketNumber",
       "ticketNumberSequance",
       "title",
@@ -41,6 +41,11 @@ exports.findAll = (req, res) => {
       {
         model: Location,
         as: "location",
+        attributes: ["name"],
+      },
+      {
+        model: Department,
+        as: "department",
         attributes: ["name"],
       },
     ],
@@ -107,6 +112,7 @@ exports.create = async (req, res) => {
     description: req.body.description,
     userId: req.body.userId,
     locationId: req.body.locationId,
+    departmentId: req.body.departmentId,
     status: req.body.status,
     complaint_added_date: new Date(),
     ticketNumber: max_value,
