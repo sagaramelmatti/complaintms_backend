@@ -1,5 +1,6 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
+const sequelize = require("sequelize");
 const User = db.user;
 const Location = db.locations;
 const Department = db.departments;
@@ -22,34 +23,68 @@ exports.supervisorBoard = (req, res) => {
 // Retrieve all Payments from the database.
 exports.findAll = (req, res) => {
 
-  const locationId = req.query.locationId;
-  const userId = req.query.userId;
-  const userType = 'U';
-  /*
-  console.log("location id"+locationId);
-
-  const condition = [
-    {
-      //locationId: locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null,
-      locationId: locationId != undefined ?  {   [Op.like]: `%${locationId}%` }  : null
-    }
-];
-*/
   let condition = {};
-  if (locationId) {
+
+  User.findAll({
+    where: {
+      userType : 'U'
+    },
+    include: [
+      {
+        model: Department,
+        as: "department",
+        attributes: ["name"],
+      },
+      {
+        model: Location,
+        as: "location",
+        attributes: ["name"],
+      },
+    ],
+  })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving payments.",
+      });
+    });
+};
+
+
+// Retrieve all Payments from the database.
+exports.searchUsers = (req, res) => {
+
+  const locationId = req.query.locationId;
+  const status = req.query.status;
+  const userType = 'U';
+
+  console.log('status='+status);
+
+  let condition = {};
+  
+  /*
+  if (locationId != undefined) {
     condition = { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null };
   }
-  if (userId) {
-    condition = { userId: userId ? { [Op.like]: `%${userId}%` } : null };
+  if (status != undefined) {
+    condition = { status: status ? { [Op.like]: `%${status}%` } : null };
   }
   if (userType) {
     condition = { userType: userType ? { [Op.like]: `%${userType}%` } : null };
   }
+  */
   
-  console.log("locatin id ="+locationId);
-
   User.findAll({
-    where: condition,
+    where: {
+      userType : 'U',
+      [Op.and]: [
+        { locationId: locationId ? { [Op.like]: `%${locationId}%` } : null },
+        { status: (status != undefined) ? { [Op.like]: `%${status}%` } : 'A' },
+      ]
+    },
     include: [
       {
         model: Department,

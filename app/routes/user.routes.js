@@ -30,6 +30,9 @@ module.exports = function (app) {
     // Retrieve all User
     router.get("/", user.findAll);
 
+    // Retrieve all User
+    router.get("/search/", user.searchUsers);
+
     // Retrieve Selected User
     router.get("/:id", user.findOne);
 
