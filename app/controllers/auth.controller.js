@@ -40,8 +40,12 @@ exports.signup = async (req, res) => {
                 res.send({ message: "User registered successfully!" });
 
                 const transporter = nodemailer.createTransport({
+                    service: 'gmail',
                     host: sender_host,
                     port: sender_port,
+                    secure: false,
+                    ignoreTLS:true,
+                    requireTLS:false,
                     auth: {
                         user: sender_email,
                         pass: sender_password,
@@ -72,6 +76,7 @@ exports.signup = async (req, res) => {
                   }); 
 
                 var mailOptionsAdmin = {
+                    service: 'gmail',
                     from: sender_email,
                     to: admin_email,
                     subject: 'Review New Employee',

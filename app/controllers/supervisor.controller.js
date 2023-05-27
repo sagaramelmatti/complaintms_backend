@@ -120,8 +120,12 @@ exports.updateStatus = async (req, res) => {
       if (complaint_data) {
 
         const transporter = nodemailer.createTransport({
-          host: sender_host,
-          port: sender_port,
+          service: 'gmail',
+                    host: sender_host,
+                    port: sender_port,
+                    secure: false,
+                    ignoreTLS:true,
+                    requireTLS:false,
           auth: {
             user: sender_email,
             pass: sender_password,
