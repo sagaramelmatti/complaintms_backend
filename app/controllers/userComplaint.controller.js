@@ -60,6 +60,8 @@ exports.findAll = (req, res) => {
 
 // Find a single Complaint with an id
 exports.findOne = (req, res) => {
+
+  const date = require('date-and-time');
   const id = req.params.id;
 
   Complaint.findByPk(id)
@@ -82,6 +84,8 @@ exports.findOne = (req, res) => {
 
 // Create and Save a new Complaint
 exports.create = async (req, res) => {
+
+  const date = require('date-and-time');
 
   // Validating the request
   if (!req.body.title) {
@@ -132,10 +136,10 @@ exports.create = async (req, res) => {
           var mailOptions = {
             from: sender_email,
             to: user_data.email,
-            subject: 'New Complaint Added',
+            subject: 'New Complaint Registered',
             text: 'New Complaint Added', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,<br/>  <SPAN STYLE="font-size:13.0pt"> </br>your Complaint has been registered, </br> Your complaint will be processed by concern person  ' +
-              ' <br> Kindly keep Ticket Numbet for future referance : ' + complaint_result.ticketNumberSequance + '',
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_data.name) + ' </b></span>,<br/>  <SPAN STYLE="font-size:13.0pt"> </br>Your complaint has been registered succesfully and will be resolved by the concerned incharge after reviewed by the admin.  ' +
+              ' <br/><br/> Kindly keep the ticket Number for future refference : ' + complaint_result.ticketNumberSequance + '',
 
           };
 
@@ -152,7 +156,7 @@ exports.create = async (req, res) => {
             to: admin_email,
             subject: 'Review New Complaint',
             text: 'New Complaint has been registered', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin New complaint has been posted, </br> Kindly review / forward it to concern person' +
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin </b> New complaint has been posted, </br> Kindly review / forward it to concern person' +
 
               '<p> Complaint details mentioned below : <p>' +
               ' User Name: ' + user_data.name +
@@ -161,7 +165,7 @@ exports.create = async (req, res) => {
               ' <br> Location : ' + location_result.name +
               ' <br> Subject : ' + complaint_result.title +
               ' <br> Description: ' + complaint_result.description +
-              ' <br> Complaint Date: ' + getFormattedDate(complaint_result.complaint_added_date) + '',
+              ' <br> Complaint Date : ' + date.format(complaint_result.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') + '',
 
           };
 
@@ -186,7 +190,7 @@ exports.create = async (req, res) => {
               ' <br> Subject : ' + complaint_result.title +
               ' <br> Description : ' + complaint_result.description +
               ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance +
-              ' <br> Complaint Date: ' + getFormattedDate(complaint_result.complaint_added_date) + '',
+              ' <br> Complaint Date : ' + date.format(complaint_result.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') + '',
           };
 
           transporter.sendMail(mailOptionsLocationHead, function (error, info) {
