@@ -215,6 +215,7 @@ exports.updateStatus = async (req, res) => {
 
     const complaint_result = await Complaint.findByPk(req.params.id);
     const location_result = await Location.findByPk(complaint_result.locationId);
+    const department_result = await Location.findByPk(complaint_result.departmentId);
     const user_result = await User.findByPk(complaint_result.userId);
 
     Complaint.findByPk(id)
@@ -240,10 +241,12 @@ exports.updateStatus = async (req, res) => {
                     to: user_result.email,
                     subject: 'Complaint Change Status',
                     text: 'Complaint Change Status', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_result.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> Your Complaint status has been chnaged </br>' +
-                        '<p> Complaint details mentioned below : <p>' +
+                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_result.name) + ' </b></span>, </br> </br>' +
+                        '<p> Kindly check complaint details mentioned below : <p>' +
                         ' Complaint Status: ' + complaint_data.status +
                         ' <br>Comment : ' + complaint_data.comment +
+                        ' <br>Location : ' + location_result.name +
+                        ' <br>Department : ' + department_result.name +
                         ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
                         ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') + '',
                 }

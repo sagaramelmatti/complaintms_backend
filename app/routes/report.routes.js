@@ -19,12 +19,10 @@ module.exports = (app) => {
    // Retrieve all Complaint
    router.get("/complaints/", report.fetchComplaintReport);
 
-  app.use("/api/admin/reports", router);
-
-  /*
-  cron.schedule("* 5 * * * *", () => {
-    console.log("Running every minute");
+  cron.schedule("0 48 21 * * 7", () => {
+    //router.get("/notification/", report.fetchComplaintNotification);
   });
-  */
+
+  app.use("/api/admin/reports", router);
 
 };
