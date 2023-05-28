@@ -19,5 +19,8 @@ module.exports = function (app) {
 	
 	// Update a Tutorial with id
     app.put("/api/auth/changePassword/:id",  controller.changePassword);
+
+    // Update a Tutorial with id
+    app.post("/api/auth/forgotPassword",  controller.forgotPassword);
 	
 };

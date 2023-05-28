@@ -11,7 +11,7 @@ module.exports = app => {
     next();
   });
   
-    var router = require("express").Router();
+  var router = require("express").Router();
 
   /* Complaint API */
 
