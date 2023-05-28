@@ -255,7 +255,7 @@ exports.forgotPassword = (req, res) => {
         subject: 'Reset Password',
         text: 'Reset Password', // plain text body
         html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear User </b>, <br/>You have requested to reset password <br/>' +
-          ' <p> New password has been sent to your email kinldy use that password : <p>' +
+          ' <p> Kindly use below given password for login : <p>' +
           ' <br>New Password : ' + tempPass + '',
       };
 
