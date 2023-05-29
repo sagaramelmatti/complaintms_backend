@@ -124,6 +124,7 @@ exports.create = async (req, res) => {
 
     const complaint_result = await Complaint.create(complaint);
     const location_result = await Location.findByPk(complaint.locationId);
+    const department_result = await Location.findByPk(complaint.departmentId);
 
     var locationCondition = complaint.locationId ? { locationId: { [Op.like]: `%${complaint.locationId}%` } } : null;
     const user_details = await LocationUser.findAll({
@@ -190,13 +191,14 @@ exports.create = async (req, res) => {
             to: admin_email,
             subject: 'Review New Complaint',
             text: 'New Complaint has been registered', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin </b> New complaint has been posted, </br> Kindly review / forward it to concern person' +
+            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin, </b> <br/>New complaint has been posted, </br> Kindly review / forward it to concern person' +
 
               '<p> Complaint details mentioned below : <p>' +
               ' User Name: ' + user_data.name +
               ' <br> Email : ' + user_data.email +
               ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance +
               ' <br> Location : ' + location_result.name +
+              ' <br> Department : ' + department_result.name +
               ' <br> Subject : ' + complaint_result.title +
               ' <br> Description: ' + complaint_result.description +
               ' <br> Complaint Date : ' + date.format(complaint_result.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') + '',
@@ -221,7 +223,7 @@ exports.create = async (req, res) => {
               to: item.user.email,
               subject: 'New Complaint Registered For your location',
               text: 'New Complaint Added', // plain text body
-              html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(item.user.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> New Complaint has been registered for your location, </br> Kindly review ' +
+              html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(item.user.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> New Complaint has been registered for your location, <br/> Kindly review ' +
                 '<p> Details mentioned below: <p>' +
                 ' User Name: ' + user_data.name +
                 ' <br> Email : ' + user_data.email +
