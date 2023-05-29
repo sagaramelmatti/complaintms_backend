@@ -10,14 +10,6 @@ module.exports = (sequelize, Sequelize) => {
         name: {
             allowNull: false,
             type: Sequelize.STRING
-        },
-        headName: {
-            allowNull: false,
-            type: Sequelize.STRING
-        },
-        email: {
-            allowNull: false,
-            type: Sequelize.STRING
         }
     });
   

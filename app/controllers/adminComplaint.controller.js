@@ -1,6 +1,7 @@
 const db = require("../models");
 const Complaint = db.complaints;
 const Location = db.locations;
+const LocationUser = db.locationUsers;
 const User = db.user;
 const Department = db.departments;
 const Op = db.Sequelize.Op;
@@ -21,7 +22,7 @@ exports.findAll = (req, res) => {
 
     const locationId = req.query.locationId;
     const userId = req.query.userId;
-	const status = req.query.status;
+    const status = req.query.status;
     //var condition = locationId ? { locationId: { [Op.like]: `%${locationId}%` } } : null;
 
     let condition = {};
@@ -31,10 +32,10 @@ exports.findAll = (req, res) => {
     if (userId) {
         condition = { userId: userId ? { [Op.like]: `%${userId}%` } : null };
     }
-	 if (status) {
+    if (status) {
         condition = { status: status ? { [Op.like]: `%${status}%` } : null };
     }
-	
+
 
     Complaint.findAll({
         where: condition,
@@ -199,8 +200,8 @@ exports.delete = (req, res) => {
 exports.updateStatus = async (req, res) => {
 
     const date = require('date-and-time');
-
     const id = req.params.id;
+
     // Create a Complaint
     const complaint = {
         status: req.body.status,
@@ -208,99 +209,123 @@ exports.updateStatus = async (req, res) => {
         complaint_resolved_date: new Date()
     };
 
-    //try {
-    const complaint_status = await Complaint.update(complaint, {
+    await Complaint.update(complaint, {
         where: { id: id },
-    });
+    })
+        .then(() => {
+            Complaint.findByPk(id)
+                .then(async (complaint_data) => {
 
-    const complaint_result = await Complaint.findByPk(req.params.id);
-    const location_result = await Location.findByPk(complaint_result.locationId);
-    const department_result = await Location.findByPk(complaint_result.departmentId);
-    const user_result = await User.findByPk(complaint_result.userId);
+                    if (complaint_data) {
 
-    Complaint.findByPk(id)
-        .then((complaint_data) => {
-            if (complaint_data) {
+                        const location_result = await Location.findByPk(complaint_data.locationId);
+                        const department_result = await Location.findByPk(complaint_data.departmentId);
+                        const user_result = await User.findByPk(complaint_data.userId);
 
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    host: sender_host,
-                    port: sender_port,
-                    secure: false,
-                    ignoreTLS:true,
-                    requireTLS:false,
-                    auth: {
-                        user: sender_email,
-                        pass: sender_password,
-                    },
-                });
-                transporter.verify().then(console.log).catch(console.error);
+                        var locationCondition = complaint_data.locationId ? { locationId: { [Op.like]: `%${complaint_data.locationId}%` } } : null;
+                        const user_details = await LocationUser.findAll({
+                            where: locationCondition,
+                            attributes: [
+                                "userId"
+                            ],
+                            include: [
+                                {
+                                    model: User,
+                                    as: "user",
+                                    attributes: ["name"],
+                                },
+                                {
+                                    model: User,
+                                    as: "user",
+                                    attributes: ["email"],
+                                }
+                            ],
+                        });
 
-                var usermailOptions = {
-                    from: sender_email,
-                    to: user_result.email,
-                    subject: 'Complaint Change Status',
-                    text: 'Complaint Change Status', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_result.name) + ' </b></span>, </br> </br>' +
-                        '<p> Kindly check complaint details mentioned below : <p>' +
-                        ' Complaint Status: ' + complaint_data.status +
-                        ' <br>Comment : ' + complaint_data.comment +
-                        ' <br>Location : ' + location_result.name +
-                        ' <br>Department : ' + department_result.name +
-                        ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
-                        ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') + '',
-                }
+                        const transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            host: sender_host,
+                            port: sender_port,
+                            secure: false,
+                            ignoreTLS: true,
+                            requireTLS: false,
+                            auth: {
+                                user: sender_email,
+                                pass: sender_password,
+                            },
+                        });
+                        transporter.verify().then(console.log).catch(console.error);
 
-                transporter.sendMail(usermailOptions, function (error, info) {
-                    if (error) {
-                        console.log(error);
+                        var usermailOptions = {
+                            from: sender_email,
+                            to: user_result.email,
+                            subject: 'Complaint Change Status',
+                            text: 'Complaint Change Status', // plain text body
+                            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user_result.name) + ' </b></span>, </br> </br>' +
+                                '<p> Kindly check complaint details mentioned below : <p>' +
+                                ' Complaint Status: ' + complaint_data.status +
+                                ' <br>Comment : ' + complaint_data.comment +
+                                ' <br>Location : ' + location_result.name +
+                                ' <br>Department : ' + department_result.name +
+                                ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
+                                ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') + '',
+                        }
+
+                        transporter.sendMail(usermailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('User Email sent: ' + info.response);
+                            }
+                        });
+
+                        user_details.forEach(function (item) {
+
+                            var mailOptionsIncharge = {
+                                from: sender_email,
+                                to: item.user.email,
+                                subject: 'Complaint Change Status',
+                                text: 'Complaint Change Status', // plain text body
+                                html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(item.user.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> </br> ' +
+                                    '<p> Details mentioned below: <p>' +
+                                    ' User Name: ' + user_result.name +
+                                    ' <br> Email : ' + user_result.email +
+                                    ' <br> Subject : ' + complaint_data.title +
+                                    ' <br> Description: ' + complaint_data.description +
+                                    ' <br> Status : ' + complaint_data.status +
+                                    ' <br> Comment : ' + complaint_data.comment +
+                                    ' <br>Department : ' + department_result.name +
+                                    ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
+                                    ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') +
+                                    ' <br> Ticket Number : ' + complaint_data.ticketNumberSequance + '',
+                            };
+
+                            transporter.sendMail(mailOptionsIncharge, function (error, info) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    console.log('Location Incharge Email sent: ' + info.response);
+                                }
+                            });
+                        });
+
+
                     } else {
-                        console.log('Email sent: ' + info.response);
+                        res.status(404).send({
+                            message: `Cannot find User with id=${id}.`,
+                        });
                     }
-                });
+                })
 
-                var mailOptionsIncharge = {
-                    from: sender_email,
-                    to: location_result.email,
-                    subject: 'Complaint Change Status',
-                    text: 'Complaint Change Status', // plain text body
-                    html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(location_result.headName) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> Complaint status has been changed , </br> ' +
-                        '<p> Details mentioned below: <p>' +
-                        ' User Name: ' + user_result.name +
-                        ' <br> Email : ' + user_result.email +
-                        ' <br> Subject : ' + complaint_data.title +
-                        ' <br> Description: ' + complaint_data.description +
-                        ' <br> Status : ' + complaint_data.status +
-                        ' <br> Comment : ' + complaint_data.comment +
-                        ' <br> Complaint Date : ' + date.format(complaint_data.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') +
-                        ' <br> Resolved Date : ' + date.format(complaint_data.complaint_resolved_date, 'DD-MM-YYYY HH:mm:ss') +
-                        ' <br> Ticket Number : ' + complaint_data.ticketNumberSequance + '',
-
-                };
-
-                transporter.sendMail(mailOptionsIncharge, function (error, info) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log('Admin Email sent: ' + info.response);
-                    }
-                });
-
-                res.send("Complaint Status successfully.");
-            } else {
-                res.status(404).send({
-                    message: `Cannot find User with id=${id}.`,
-                });
-            }
+            res.status(200).send({
+                message: "Complaint Status successfully=",
+            });
         })
-
-    /*
-} catch (error) {
-  console.log('error');
-  return 'test';
-}
-*/
-
+        .catch((err) => {
+            res.status(500).send({
+                message: "Error updating Complaint Status with id=" + id,
+            });
+        });
 };
 
 function capitalizeFirstLetter(str) {

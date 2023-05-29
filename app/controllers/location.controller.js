@@ -1,6 +1,8 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const Location = db.locations;
+const User = db.user;
+const LocationUsers = db.locationUsers;
 
 // Create and Save a new Location
 
@@ -15,9 +17,7 @@ exports.create = (req, res) => {
 
     // Creating a Location
     const location = {
-        name: req.body.name,
-        headName: req.body.headName,
-        email: req.body.email
+        name: req.body.name
     };
 
   // Saving the Location in the database
@@ -37,6 +37,48 @@ exports.findAll = (req, res) => {
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
   Location.findAll({ where: condition })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving students.",
+      });
+    });
+};
+
+// Retrieve all Students from the database.
+exports.findAllLocationUser = (req, res) => {
+  const name = req.query.name;
+  var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+
+  LocationUsers.findAll({
+    where: condition,
+    attributes: [
+      "id", 
+      "userId", 
+      "locationId"
+    ],
+    include: [
+      {
+        model: User,
+        as: "user",
+        attributes: ["name"],
+      },
+      {
+        model: User,
+        as: "user",
+        attributes: ["email"],
+      },
+      {
+        model: Location,
+        as: "location",
+        attributes: ["name"],
+      }
+
+    ],
+  })
     .then((data) => {
       res.send(data);
     })

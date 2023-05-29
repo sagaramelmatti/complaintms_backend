@@ -16,6 +16,8 @@ module.exports = app => {
     // Create a new Tutorial
     // Retrieve all Tutorials
     router.get("/",  location.findAll);
+
+    router.get("/list/",  location.findAllLocationUser);
   
     // Retrieve a single Tutorial with id
     router.get("/:id",  location.findOne);

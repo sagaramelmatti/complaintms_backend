@@ -1,6 +1,7 @@
 const db = require("../models");
 const Complaint = db.complaints;
 const Location = db.locations;
+const LocationUser = db.locationUsers;
 const User = db.user;
 const Department = db.departments;
 const Op = db.Sequelize.Op;
@@ -124,6 +125,29 @@ exports.create = async (req, res) => {
     const complaint_result = await Complaint.create(complaint);
     const location_result = await Location.findByPk(complaint.locationId);
 
+    var locationCondition = complaint.locationId ? { locationId: { [Op.like]: `%${complaint.locationId}%` } } : null;
+    const user_details = await LocationUser.findAll({
+      where: locationCondition,
+      attributes: [
+        "userId"
+      ],
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["name"],
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: ["email"],
+        }
+
+      ],
+    });
+
+   
+
     const id = complaint.userId;
     User.findByPk(id)
       .then((user_data) => {
@@ -187,29 +211,36 @@ exports.create = async (req, res) => {
             }
           });
 
-          var mailOptionsLocationHead = {
-            from: sender_email,
-            to: location_result.email,
-            subject: 'New Complaint Registered For your location',
-            text: 'New Complaint Added', // plain text body
-            html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(location_result.headName) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> New Complaint has been registered for your location, </br> Kindly review ' +
-              '<p> Details mentioned below: <p>' +
-              ' User Name: ' + user_data.name +
-              ' <br> Email : ' + user_data.email +
-              ' <br> Location : ' + location_result.name +
-              ' <br> Subject : ' + complaint_result.title +
-              ' <br> Description : ' + complaint_result.description +
-              ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance +
-              ' <br> Complaint Date : ' + date.format(complaint_result.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') + '',
-          };
 
-          transporter.sendMail(mailOptionsLocationHead, function (error, info) {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('Email sent: ' + info.response);
-            }
-          });
+          user_details.forEach(function (item) {
+            console.log("user name" + item.user.name)
+            console.log("user email" + item.user.email)
+
+            var mailOptionsLocationHead = {
+              from: sender_email,
+              to: item.user.email,
+              subject: 'New Complaint Registered For your location',
+              text: 'New Complaint Added', // plain text body
+              html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(item.user.name) + ' </b></span>, </br></br> <SPAN STYLE="font-size:13.0pt"> New Complaint has been registered for your location, </br> Kindly review ' +
+                '<p> Details mentioned below: <p>' +
+                ' User Name: ' + user_data.name +
+                ' <br> Email : ' + user_data.email +
+                ' <br> Location : ' + location_result.name +
+                ' <br> Subject : ' + complaint_result.title +
+                ' <br> Description : ' + complaint_result.description +
+                ' <br> Ticket Number : ' + complaint_result.ticketNumberSequance +
+                ' <br> Complaint Date : ' + date.format(complaint_result.complaint_added_date, 'DD-MM-YYYY HH:mm:ss') + '',
+            };
+
+            transporter.sendMail(mailOptionsLocationHead, function (error, info) {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+              }
+            });
+        });
+
 
           res.send("Complaint Added successfully.");
         } else {
@@ -221,8 +252,7 @@ exports.create = async (req, res) => {
 
     return complaint_result;
   } catch (error) {
-    console.log('error');
-    return 'test';
+    console.log('error'+error);
   }
 };
 

@@ -16,16 +16,19 @@ module.exports = (app) => {
   /* Complaint API */
 
   // Retrieve all Complaint
-  router.get("/:locationId", supervisor.findByLocationId);
+  router.get("/complaints/:locationId", supervisor.findByLocationId);
+
+  // Retrieve all Complaint
+  router.get("/locations/:Id", supervisor.findByUserId);
 
   // Retrieve selected Complaint
-  router.get("/:locationId/:id", supervisor.findComplaint);
+  router.get("/complaints/:locationId/:id", supervisor.findComplaint);
 
   // Update Complaint
-  router.put("/:id", supervisor.update);
+  router.put("/complaints/:id", supervisor.update);
 
   // Update a Complaint with id
-  router.put("/status/:id", supervisor.updateStatus);
+  router.put("/complaints/status/:id", supervisor.updateStatus);
 
-  app.use("/api/supervisor/complaints", router);
+  app.use("/api/supervisor", router);
 };
