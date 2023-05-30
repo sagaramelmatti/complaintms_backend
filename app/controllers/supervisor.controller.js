@@ -215,7 +215,7 @@ exports.updateStatus = async (req, res) => {
 };
 
 // Delete a User with the specified id in the request
-exports.deleteComplaint = (req, res) => {
+exports.delete = (req, res) => {
   const id = req.params.id;
 
   Complaint.destroy({

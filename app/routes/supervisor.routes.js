@@ -30,5 +30,8 @@ module.exports = (app) => {
   // Update a Complaint with id
   router.put("/complaints/status/:id", supervisor.updateStatus);
 
+  // Delete a Complaint with id
+  router.delete("/complaints/:id",  supervisor.delete);
+
   app.use("/api/supervisor", router);
 };
