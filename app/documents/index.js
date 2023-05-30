@@ -83,6 +83,7 @@ return `
                <tr>
                   <th>Complaint Date</th>
                   <th>Resolved Date</th>
+                  <th>Ticket Number</th>
                   <th>Title</th>
                   <th>Description</th>
                   <th>Name</th>
@@ -95,6 +96,7 @@ return `
                   `<tr class="information">
                         <td>${item.complaint_added_date}</td>
                         <td>${item.complaint_resolved_date}</td>
+                        <td>${item.ticketNumberSequance}</td>
                         <td>${item.title}</td>
                         <td>${item.description}</td>
                         <td>${item.user.name}</td>
