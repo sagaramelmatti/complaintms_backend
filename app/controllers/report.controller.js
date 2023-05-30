@@ -21,6 +21,7 @@ var admin_email = email_config.admin_email;
 // Retrieve all Payments from the database.
 exports.create = async (req, res) => {
 
+  const date = require('date-and-time');
     const locationId = req.query.locationId;
     const fromDate = req.query.from_date;
     const toDate = req.query.to_date;
