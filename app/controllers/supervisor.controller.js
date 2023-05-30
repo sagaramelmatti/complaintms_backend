@@ -124,7 +124,7 @@ exports.updateStatus = async (req, res) => {
             console.log("complaint_data" + JSON.stringify(complaint_data));
 
             const location_result = await Location.findByPk(complaint_data.locationId);
-            const department_result = await Location.findByPk(complaint_data.departmentId);
+            const department_result = await Department.findByPk(complaint_data.departmentId);
             const user_result = await User.findByPk(complaint_data.userId);
 
             const transporter = nodemailer.createTransport({

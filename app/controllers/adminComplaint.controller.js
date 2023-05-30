@@ -219,7 +219,7 @@ exports.updateStatus = async (req, res) => {
                     if (complaint_data) {
 
                         const location_result = await Location.findByPk(complaint_data.locationId);
-                        const department_result = await Location.findByPk(complaint_data.departmentId);
+                        const department_result = await Department.findByPk(complaint_data.departmentId);
                         const user_result = await User.findByPk(complaint_data.userId);
 
                         var locationCondition = complaint_data.locationId ? { locationId: { [Op.like]: `%${complaint_data.locationId}%` } } : null;

@@ -124,7 +124,7 @@ exports.create = async (req, res) => {
 
     const complaint_result = await Complaint.create(complaint);
     const location_result = await Location.findByPk(complaint.locationId);
-    const department_result = await Location.findByPk(complaint.departmentId);
+    const department_result = await Department.findByPk(complaint.departmentId);
 
     var locationCondition = complaint.locationId ? { locationId: { [Op.like]: `%${complaint.locationId}%` } } : null;
     const user_details = await LocationUser.findAll({
