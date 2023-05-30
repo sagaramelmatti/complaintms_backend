@@ -43,6 +43,20 @@ exports.create = async (req, res) => {
         complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.gte]: `%${fromDate}%` } : null
         //complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.lte]: `%${toDate}%` } : null,
       },
+
+      where: {
+
+        locationId : locationId ? { [Op.like]: `%${locationId}%` } : null,
+        complaint_added_date: {
+          [Op.gte]: date.format(fromDate, 'YYYY-MM-DD')
+        },
+        complaint_added_date: {
+          [Op.lte]: date.format(toDate, 'YYYY-MM-DD')
+        },
+        //complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.lte]: `%${date.format(d, 'YYYY-MM-DD')}%` } : null
+        //complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.lte]: `%${toDate}%` } : null,
+      },
+
       attributes: [
         "id",
         "title",
