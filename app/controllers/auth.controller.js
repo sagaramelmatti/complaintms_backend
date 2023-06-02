@@ -58,8 +58,8 @@ exports.signup = async (req, res) => {
           to: user.email,
           subject: 'Employee Registration',
           text: 'Employee registered successfully', // plain text body
-          html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user.name) + ' </b></span>, </br> <SPAN STYLE="font-size:13.0pt"> <br/>You have been registered succesfully<br/>' +
-            ' <p> For login check details below : <p>' +
+          html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear ' + capitalizeFirstLetter(user.name) + ' </b></span>, </br> <SPAN STYLE="font-size:13.0pt"> <br/>You have been registered succesfully at BRPL IT Helpdesk Portal by IT Team. <br/>' +
+            ' <p> For login check details below : </p>' +
             ' <br>Email : ' + req.body.email +
             ' <br>Password : ' + req.body.password +
             ' <br> Location : ' + location_result.name +
