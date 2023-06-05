@@ -1,7 +1,19 @@
+const https = require('https');
+const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 
 const app = express();
+
+/*
+const options = {
+  key: fs.readFileSync('./localhost-key.pem'), // Replace with the path to your key
+  cert: fs.readFileSync('./localhost.pem') // Replace with the path to your certificate
+}
+*/
+
+
+
 
 var corsOptions = {
   origin: "*"
@@ -47,9 +59,26 @@ require("./app/routes/userComplaint.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8081;
+/*
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+*/
+
+
+  const server = https
+  .createServer(
+    {
+      key: fs.readFileSync("key.pem"),
+      cert: fs.readFileSync("cert.pem"),
+      passphrase: "password",
+    },
+    app
+  )
+  .listen(PORT, () => {
+    console.log(`Secure server listening on port:${PORT}`);
+  });
+
 
 function initial() {
   Role.create({
