@@ -19,7 +19,7 @@ module.exports = (app) => {
   router.get("/complaints/:locationId", supervisor.findByLocationId);
 
   // Retrieve all Complaint
-  router.get("/locations/:Id", supervisor.findByUserId);
+  router.get("/locations/:userId", supervisor.findByUserId);
 
   // Retrieve selected Complaint
   router.get("/complaints/:locationId/:id", supervisor.findComplaint);

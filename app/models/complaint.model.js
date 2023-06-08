@@ -33,7 +33,9 @@ module.exports = (sequelize, Sequelize) => {
             type: 'TIMESTAMP'
         },
         ticketNumber: {
-            type: Sequelize.INTEGER
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            unique: true
         },
         ticketNumberSequance: {
             type: Sequelize.STRING(10)
