@@ -176,7 +176,7 @@ exports.updateStatus = async (req, res) => {
               text: 'Complaint Change Status', // plain text body
               html: '</br><SPAN STYLE="font-size:12.0pt"> <b>Dear Admin  , </b> </br> ' +
                 '	<p> Details mentioned below: <p>' +
-                ' </br>User Name: ' + user_result.name +
+                ' <br/>User Name: ' + user_result.name +
                 ' <br/> Email : ' + user_result.email +
                 ' <br/> Subject : ' + complaint_data.title +
                 ' <br/> Description: ' + complaint_data.description +

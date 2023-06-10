@@ -95,7 +95,7 @@ return `
                ${items.map(item => 
                   `<tr class="information">
                         <td>${item.complaint_added_date}</td>
-                        <td>${item.complaint_resolved_date}</td>
+                        <td>${item.complaint_resolved_date != null ? item.complaint_resolved_date : "" }</td>
                         <td>${item.ticketNumberSequance}</td>
                         <td>${item.title}</td>
                         <td>${item.description}</td>
@@ -103,7 +103,7 @@ return `
                         <td>${item.location.name}</td>
                         <td>${item.department.name}</td>
                         <td>${item.status}</td>
-                        <td>${item.comment}</td>
+                        <td>${item.comment != null ? item.comment : "" }</td>
                   </tr> `
                ).join('')}
 

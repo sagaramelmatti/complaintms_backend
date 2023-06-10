@@ -22,6 +22,7 @@ var admin_email = email_config.admin_email;
 exports.create = async (req, res) => {
 
     const locationId = req.query.locationId;
+    const status = req.query.status;
     const fromDate = req.query.from_date;
     const toDate = req.query.to_date;
 
@@ -40,6 +41,7 @@ exports.create = async (req, res) => {
     const complaint_list = await Complaint.findAll({
       where: {
         locationId : locationId ? { [Op.like]: `%${locationId}%` } : null,
+        status : status ? { [Op.like]: `%${status}%` } : null,
         complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.gte]: `%${fromDate}%` } : null
         //complaint_added_date : sequelize.fn('complaint_added_date') ? { [Op.lte]: `%${toDate}%` } : null,
       },
